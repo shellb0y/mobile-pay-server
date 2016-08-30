@@ -6,7 +6,6 @@ var command = require('./command');
 var Enumerable = require('linq');
 require('./date_ex');
 require('./string_ex');
-var db = require('./db');
 var io;
 
 var clients = [], messages = [];
@@ -108,47 +107,47 @@ exports.send = (msg)=> {
 exports.recevie = (id)=> {
     console.log(`recevie ${id}`);
 
-    return new Promise((resolve, reject)=> {
-        db.client.hgetall(`box-server:sid:${id}`, (err, reps)=> {
-            if (err) {
-                console.log(`redis error - ${err}`);
-                reject(err);
-            }
-            else {
-                db.client.del(`box-server:sid:${id}`);
-                resolve(reps);
-            }
-        });
-    });
+    //return new Promise((resolve, reject)=> {
+    //    db.client.hgetall(`box-server:sid:${id}`, (err, reps)=> {
+    //        if (err) {
+    //            console.log(`redis error - ${err}`);
+    //            reject(err);
+    //        }
+    //        else {
+    //            db.client.del(`box-server:sid:${id}`);
+    //            resolve(reps);
+    //        }
+    //    });
+    //});
 };
 
 
 function handler_checkcode_realm(data, socket) {
-    if (!data.error) {
-        let client = Enumerable.from(clients).where(`$ && $.id=='${socket.client.id}'`).singleOrDefault();
-        if (client) {
-            client.recevied_time = data.timespan;
-            client.ip = data.ip;
-            control.emit('log', `${socket.client.id}-${data.ip ? socket.handshake.address : data.ip}-${new Date(data.timespan).format('yyyy-MM-dd hh:mm:ss')}-\n${data.data}`);
-        }
-        else {
-            let error = `cannot find terminal[${socket.client.id}],maybe was disconnected.`;
-            data.error = error;
-            control.emit('log', error);
-        }
-    } else {
-        control.emit('log', data.error);
-    }
-
-    if (async == 0) {
-
-        db.client.hmset('box-server:sid:' + data.id, {
-            'id': data.id,
-            'recevied_data': data.data,
-            'recevied_time': data.timespan,
-            'error': data.error
-        });
-
-        db.client.expire('box-server:sid:' + data.id, 600);
-    }
+    //if (!data.error) {
+    //    let client = Enumerable.from(clients).where(`$ && $.id=='${socket.client.id}'`).singleOrDefault();
+    //    if (client) {
+    //        client.recevied_time = data.timespan;
+    //        client.ip = data.ip;
+    //        control.emit('log', `${socket.client.id}-${data.ip ? socket.handshake.address : data.ip}-${new Date(data.timespan).format('yyyy-MM-dd hh:mm:ss')}-\n${data.data}`);
+    //    }
+    //    else {
+    //        let error = `cannot find terminal[${socket.client.id}],maybe was disconnected.`;
+    //        data.error = error;
+    //        control.emit('log', error);
+    //    }
+    //} else {
+    //    control.emit('log', data.error);
+    //}
+    //
+    //if (async == 0) {
+    //
+    //    db.client.hmset('box-server:sid:' + data.id, {
+    //        'id': data.id,
+    //        'recevied_data': data.data,
+    //        'recevied_time': data.timespan,
+    //        'error': data.error
+    //    });
+    //
+    //    db.client.expire('box-server:sid:' + data.id, 600);
+    //}
 }
