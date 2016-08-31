@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <meta http-equiv="refresh" content="10">
+    <link rel="stylesheet" href="/stylesheets/style.css"/>
+    <style type="text/css">
+        table {
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        table.gridtable {
+            font-family: verdana, arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div style="width:100%;text-align: center"><%= new Date() %></div>
+<br/>
+<table class="gridtable">
+    <tr>
+        <th>ID</th>
+        <th>IP</th>
+        <th>Address</th>
+        <th>Send Time</th>
+        <th>Receive Time</th>
+    </tr>
+    <% clients.forEach(function(m){ %>
+    <td><%= m.id %></td>
+    <td><%= m.ip %></td>
+    <td><%= m.address %></td>
+    <td><%= new Date(m.send_time).format('yyyy-MM-dd hh:mm:ss') %></td>
+    <td><%= new Date(m.recevied_time).format('yyyy-MM-dd hh:mm:ss') %></td>
+    </tr>
+    <% }) %>
+</table>
+<br/>
+<br/>
+<table class="gridtable">
+    <tr>
+        <th>ID</th>
+        <th>Connected</th>
+        <th>Disconnected</th>
+        <th>Time</th>
+    </tr>
+    <% if(connects && connects != 'undefined'){for(var key in connects){ %>
+    <td><%= connects[key].id %></td>
+    <td><%= connects[key].connected %></td>
+    <td><%= connects[key].disconnected %></td>
+    <td><%= new Date(connects[key].handshake.time).format('yyyy-MM-dd hh:mm:ss') %></td>
+    </tr>
+    <% }} %>
+</table>
+</body>
+</html>

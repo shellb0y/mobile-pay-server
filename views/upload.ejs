@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片浏览</title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+</head>
+<body>
+<div style="width: 100%">
+    <% files.forEach(function(f){ %>
+    <a href="/upload/<%=f%>" style="width:100%;float: left"><%=f%></a>
+    <% }); %>
+</div>
+</body>
+</html>
+

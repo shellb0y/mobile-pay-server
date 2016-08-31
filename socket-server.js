@@ -6,6 +6,8 @@ var command = require('./command');
 var Enumerable = require('linq');
 require('./date_ex');
 require('./string_ex');
+var db=require('./models/db');
+var sander = require('sander');
 var io;
 
 var clients = [], messages = [];
@@ -31,12 +33,37 @@ exports.___init__ = (server)=> {
         //console.log(terminal.connected);
         console.log(`terminal ${socket.client.id},${socket.handshake.address} on ${socket.handshake.time} connected.`);
 
-        socket.on('test',(data)=>{
-          console.log(data);
-        }).on("checkcode", (data)=> {
-            handler_checkcode_realm(data, socket);
-        }).on('realm', (data)=> {
-            handler_checkcode_realm(data, socket);
+        socket.on('upload_image', (data)=> {
+            console.log(data);
+            data = JSON.parse(data);
+            let bitmap = new Buffer(data.image, 'base64');
+            let path = 'public/upload/'+new Date().format('yyyy-MM-dd');
+            //sander.exists(path).then((exist)=>{
+            //   if(!exist){
+            //       return sander.mkdir(path);
+            //   }
+            //}).then();
+            if(!sander.existsSync(path)){
+                sander.mkdirSync(path);
+            }
+            sander.writeFileSync(path+'/'+data.name, bitmap);
+        }).on("save_order", (data)=> {
+            console.log(data);
+            if (data) {
+                data = JSON.parse(data);
+                console.log(data.order_id);
+                db.order.findOne({where: {order_id: data.order_id}}).then(function (order) {
+                    if (order)
+                        return db.order.update(data, {where: {order_id: data.order_id}});
+                    else
+                        return db.order.create(data);
+                }).then((ret)=>{
+                    if(ret)
+                        console.log("save success");
+                    else
+                        console.log("save faild");
+                });
+            }
         }).on('disconnect', ()=> {
             console.log(`termnal ${socket.client.id},${socket.handshake.address} on ${new Date()} disconnected.`);
             let client = Enumerable.from(clients).where(`$ && $.id=='${socket.client.id}'`).singleOrDefault();

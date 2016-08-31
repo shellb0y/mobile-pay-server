@@ -3,15 +3,13 @@
  */
 
 var man = '\nCommand:\n\n' +
-    '  dcc   \<str\> checkcode解码\n'+
-    '  ecc   \<str\> checkcode编码\n'+
-    '  realm \<str\> 计算token参数\n';
+    '  upload_image   \<str\> 上传图片\n'+
+    '  save_order   \<str\> 保存订单数据\n';
 
 
 var commands = [
-    {regex: /^dcc (.*)/, action: d_check_code},
-    {regex: /^ecc (.*)/, action: e_check_code},
-    {regex: /^realm (.*)/, action: realm}
+    {regex: /^upload_image (.*)/, action: upload_image},
+    {regex: /^save_order (.*)/, action: save_order},
 ];
 
 var sock;
@@ -32,14 +30,10 @@ exports.exec = function (command, socket) {
     return valid;
 };
 
-function realm(args){
-    sock.emit('realm', args[1],args[2]);
+function upload_image(args){
+    console.log("upload_image");
 }
 
-function d_check_code(args){
-    sock.emit('d_checkcode', args[1],args[2]);
-}
-
-function e_check_code(args){
-    sock.emit('e_checkcode', args[1],args[2]);
+function save_order(args){
+    console.log("save_order");
 }

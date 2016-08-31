@@ -10,35 +10,42 @@ const bodyparser = require('koa-bodyparser')({formLimit: '5m'});
 const logger = require('koa-logger');
 
 const index = require('./routes/index');
-const users = require('./routes/users');
+const _console = require('./routes/console');
+const mobile_pay_api = require('./api/mobile-pay-api');
+const monitor = require('./routes/monitor');
+const upload = require('./routes/upload');
 
 // middlewares
 app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));
 app.use(require('koa-static')(__dirname + '/public'));
+app.use(require('koa-static')(__dirname + '/node_modules'));
 
 app.use(views(__dirname + '/views', {
-  extension: 'jade'
+    extension: 'ejs'
 }));
 
 // logger
 app.use(async (ctx, next) => {
-  const start = new Date();
-  await next();
-  const ms = new Date() - start;
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+    const start = new Date();
+    await next();
+    const ms = new Date() - start;
+    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
 router.use('/', index.routes(), index.allowedMethods());
-router.use('/users', users.routes(), users.allowedMethods());
+router.use('/console', _console.routes(), _console.allowedMethods());
+router.use('/api/mobilepay', mobile_pay_api.routes(), mobile_pay_api.allowedMethods());
+router.use('/monitor', monitor.routes(), monitor.allowedMethods());
+router.use('/upload', upload.routes(), upload.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response
 
-app.on('error', function(err, ctx){
-  console.log(err)
-  logger.error('server error', err, ctx);
+app.on('error', function (err, ctx) {
+    console.log(err)
+    logger.error('server error', err, ctx);
 });
 
 
