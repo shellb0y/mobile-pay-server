@@ -6,8 +6,9 @@
 </head>
 <body>
 <div style="width: 100%">
+    <a href="<%= prev_path %>">..</a>
     <% files.forEach(function(f){ %>
-    <a href="/upload/<%=f%>" style="width:100%;float: left"><%=f%></a>
+    <a href="<%= path + '/' + f %>" style="width:100%;float: left"><%= f %></a>
     <% }); %>
 </div>
 </body>

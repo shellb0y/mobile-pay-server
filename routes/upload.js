@@ -4,17 +4,23 @@
 var router = require('koa-router')();
 var sander = require('sander');
 
-router.get('/:dir?', async function (ctx, next) {
-    let root = process.cwd() + '/public/upload';
-    var dir = ctx.params.dir;
-    console.log(ctx.params);
-    if (dir)
-        dir = root + "/" + dir;
-    else
-        dir = root;
+router.get('/:date?/:orderid?', async function (ctx, next) {
+    let path = process.cwd() + '/public/upload';
+    let orderid = ctx.params.orderid;
+    let date = ctx.params.date;
 
-    var list = await sander.readdirSync(dir);
-    await ctx.render('upload', {files: list});
+    if (date)
+        path = path + "/" + date;
+    if (orderid)
+        path = path + "/" + orderid;
+
+    var list = sander.readdirSync(path);
+    path = path.substring(path.indexOf('/upload'));
+    await ctx.render('upload', {
+        files: list,
+        path: path,
+        prev_path: path.substring(0,path.lastIndexOf('/'))
+    });
 });
 
 module.exports = router;

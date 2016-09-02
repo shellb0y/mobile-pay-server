@@ -6,12 +6,12 @@ var command = require('./command');
 var Enumerable = require('linq');
 require('./date_ex');
 require('./string_ex');
-var db=require('./models/db');
+var db = require('./models/db');
 var sander = require('sander');
 var io;
 
-var clients = [], messages = [];
-var terminal, control, async;
+var clients = [];
+var terminal, control;
 
 exports.clients = clients;
 exports.terminal = terminal;
@@ -34,21 +34,23 @@ exports.___init__ = (server)=> {
         console.log(`terminal ${socket.client.id},${socket.handshake.address} on ${socket.handshake.time} connected.`);
 
         socket.on('upload_image', (data)=> {
-            console.log(data);
+            console.log(`upload image ${data.name}`);
             data = JSON.parse(data);
             let bitmap = new Buffer(data.image, 'base64');
-            let path = 'public/upload/'+new Date().format('yyyy-MM-dd');
-            //sander.exists(path).then((exist)=>{
-            //   if(!exist){
-            //       return sander.mkdir(path);
-            //   }
-            //}).then();
-            if(!sander.existsSync(path)){
-                sander.mkdirSync(path);
-            }
-            sander.writeFileSync(path+'/'+data.name, bitmap);
+            let path = `public/upload/${new Date().format('yyyy-MM-dd')}/${data.id}`;
+
+            sander.exists(path).then((exist)=> {
+                if (!exist)
+                    sander.mkdir(path);
+            }).then(()=> {
+                sander.writeFile(path + '/' + data.name, bitmap);
+            }).then(()=> {
+                console.log(`${data.name} upload success`);
+            }).catch((err)=> {
+                console.log(err);
+            });
         }).on("save_order", (data)=> {
-            console.log(data);
+            console.log(`save order ${data}`);
             if (data) {
                 data = JSON.parse(data);
                 console.log(data.order_id);
@@ -57,18 +59,17 @@ exports.___init__ = (server)=> {
                         return db.order.update(data, {where: {order_id: data.order_id}});
                     else
                         return db.order.create(data);
-                }).then((ret)=>{
-                    if(ret)
-                        console.log("save success");
+                }).then((ret)=> {
+                    if (ret)
+                        console.log("save order success");
                     else
-                        console.log("save faild");
+                        console.log("save order faild");
                 });
             }
         }).on('disconnect', ()=> {
             console.log(`termnal ${socket.client.id},${socket.handshake.address} on ${new Date()} disconnected.`);
             let client = Enumerable.from(clients).where(`$ && $.id=='${socket.client.id}'`).singleOrDefault();
             if (client) {
-                //clients.splice([clients.indexOf(client), 1]);
                 delete clients[clients.indexOf(client)];
             }
 
