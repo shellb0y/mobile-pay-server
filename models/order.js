@@ -1,15 +1,21 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
+
   return sequelize.define('order', {
     order_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
+    },
+    origin_id: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     transcation_id: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     },
     order_data: {
       type: DataTypes.STRING,

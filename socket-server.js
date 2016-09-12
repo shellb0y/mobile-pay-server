@@ -53,13 +53,13 @@ exports.___init__ = (server)=> {
             console.log(`save order ${data}`);
             if (data) {
                 data = JSON.parse(data);
-                console.log(data.order_id);
-                db.order.findOne({where: {order_id: data.order_id}}).then(function (order) {
-                    if (order)
-                        return db.order.update(data, {where: {order_id: data.order_id}});
-                    else
-                        return db.order.create(data);
-                }).then((ret)=> {
+                console.log(data.origin_id);
+                //db.order.findOne({where: {origin_id: data.origin_id}}).then(function (order) {
+                //    if (order)
+                //        return db.order.update(data, {where: {origin_id: data.origin_id}});
+                //    else
+                //        return db.order.create(data);
+                db.order.create(data).then((ret)=> {
                     if (ret)
                         console.log("save order success");
                     else
