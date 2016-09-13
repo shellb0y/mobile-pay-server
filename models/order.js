@@ -13,6 +13,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
+    origin_number: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     transcation_id: {
       type: DataTypes.STRING,
       allowNull: false
@@ -26,6 +30,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     status: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    callback_status: {
       type: DataTypes.STRING,
       allowNull: false
     },
