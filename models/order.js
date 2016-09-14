@@ -13,7 +13,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
-    origin_number: {
+    order_number: {
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -35,14 +35,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     callback_status: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     order_time: {
       type: DataTypes.STRING,
       allowNull: false
     },
     order_timeout: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false
     },
     terminal: {

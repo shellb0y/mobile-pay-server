@@ -6,7 +6,7 @@ const co = require('co');
 const convert = require('koa-convert');
 const json = require('koa-json');
 const onerror = require('koa-onerror');
-const bodyparser = require('koa-bodyparser')({formLimit: '5m'});
+const bodyparser = require('koa-bodyparser')({formLimit: '5mb'});
 const logger = require('koa-logger');
 
 const index = require('./routes/index');
@@ -43,9 +43,10 @@ router.use('/upload', upload.routes(), upload.allowedMethods());
 app.use(router.routes(), router.allowedMethods());
 // response
 
-app.on('error', function (err, ctx) {
-    console.log(err)
+app.on('error',async function (err, ctx, next) {
+    console.log(err);
     logger.error('server error', err, ctx);
+    await next();
 });
 
 
