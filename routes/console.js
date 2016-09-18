@@ -8,8 +8,7 @@ router.get('/', async function (ctx, next) {
         title: 'Console'
     };
 
-    await ctx.render('console', {
-    });
+    await ctx.render('console');
 });
 
 module.exports = router;

@@ -37,7 +37,7 @@
     </style>
 </head>
 <body>
-<div style="width:100%;text-align: center"><%= new Date() %></div>
+<div style="width:100%;text-align: center"><a href="http://192.168.1.93:5601/?#/discover?_g=()&_a=(columns:!(appname,message),filters:!(),index:'logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:mps)),sort:!('@timestamp',desc))" target="_blank"><%= new Date() %></a></div>
 <br/>
 <table class="gridtable">
     <tr>
@@ -46,6 +46,7 @@
         <th>Address</th>
         <th>Receive Time</th>
         <th>Message</th>
+        <th>Log</th>
     </tr>
     <% for(var i in clients){ %>
     <tr>
@@ -54,6 +55,7 @@
         <td><%= clients[i].address %></td>
         <td><%= new Date(clients[i].recevied_time).format('yyyy-MM-dd hh:mm:ss') %></td>
         <td><%= clients[i].message %></td>
+        <td><a target="_blank" href="http://192.168.1.93:5601/?#/discover?_g=()&_a=(columns:!(appname,message),filters:!(),index:'logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'<%= clients[i].ip %>')),sort:!('@timestamp',desc))">LOG</a> </td>
     </tr>
     <% } %>
 </table>

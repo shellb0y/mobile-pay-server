@@ -3,7 +3,7 @@
  */
     'use strict'
 var logger = require('../logger');
-
+var Enumerable = require('linq');
 //logger.t("trace");
 //logger.d("debug");
 //logger.i("info");
@@ -13,12 +13,15 @@ var logger = require('../logger');
 
 
 var client=[];
-client["a"] = 1;
-client["b"] = 2;
+client["a"] = {'id':1,'data':'1'};
+client["b"] = {'id':2,'data':'2'};
 //console.log(client);
 //delete client["c"];
 //console.log(client);
 
-for(var i in client){
-    console.log(client[i]);
+console.log(client.length);
+if(client.length){
+    console.log('1');
+}else{
+    console.log('2');
 }

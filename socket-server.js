@@ -71,7 +71,6 @@ exports.___init__ = (server)=> {
             if (!msg) {
                 clients[socket.client.id].ip = ip;
             } else {
-                console.log(msg);
                 clients[socket.client.id].message = msg;
                 clients[socket.client.id].recevied_time = new Date();
             }
@@ -90,25 +89,14 @@ exports.___init__ = (server)=> {
         console.log(`control ${socket.client.id},${socket.handshake.address} on ${socket.handshake.time} connected.`);
 
         socket.on('control', (data)=> {
-            if (data == 'help')
+            if (data == 'help') {
                 socket.emit('log', command.man);
-            else if (data == 'show clients') {
-                socket.emit('log', 'id'.padRight(30) + 'address'.padRight(30) + 'send_time'.padRight(30) + 'recevied_time'.padRight(30) + 'ip'.padRight(30));
-                clients.map((c)=> {
-                    socket.emit('log', c.id.padRight(30) + c.address.padRight(30) + (new Date(c.send_time).format('yyyy-MM-dd hh:mm:ss') + '').padRight(30) +
-                        (new Date(c.recevied_time).format('yyyy-MM-dd hh:mm:ss') + '').padRight(30) + c.ip.padRight(30));
-                });
+                return;
             }
-            else if (clients.length > 0) {
-                let client = Enumerable.from(clients).where('$').orderBy('$.send_time').toArray()[0];
-                if (client) {
-                    client.send_time = Date.parse(new Date());
-                    if (!command.exec(data, terminal.sockets["/terminal#" + client.id])) {
-                        socket.emit('log', 'bad command.');
-                    }
-                }
-                else {
-                    socket.emit('log', 'connection loss');
+
+            if (clients) {
+                if (!command.exec(data, terminal.sockets, clients, socket)) {
+                    socket.emit('log', 'bad command.');
                 }
             }
             else {
@@ -121,70 +109,3 @@ exports.___init__ = (server)=> {
         socket = null;
     });
 };
-
-exports.send = (msg)=> {
-    console.log(`send ${msg}`);
-    let error = '';
-    if (clients.length > 0) {
-        let client = Enumerable.from(clients).where('$').orderBy('$.send_time').toArray()[0];
-        if (client) {
-            client.send_time = new Date();
-            if (!command.exec(`${msg.cmd} ${msg.sid} ${msg.data}`, terminal.sockets["/terminal#" + client.id]))
-                error = 'bad command';
-            else
-                error = 'accept';
-        }
-    } else
-        error = 'terminal not enough';
-
-    return error;
-};
-
-
-exports.recevie = (id)=> {
-    console.log(`recevie ${id}`);
-
-    //return new Promise((resolve, reject)=> {
-    //    db.client.hgetall(`box-server:sid:${id}`, (err, reps)=> {
-    //        if (err) {
-    //            console.log(`redis error - ${err}`);
-    //            reject(err);
-    //        }
-    //        else {
-    //            db.client.del(`box-server:sid:${id}`);
-    //            resolve(reps);
-    //        }
-    //    });
-    //});
-};
-
-
-function handler_checkcode_realm(data, socket) {
-    //if (!data.error) {
-    //    let client = Enumerable.from(clients).where(`$ && $.id=='${socket.client.id}'`).singleOrDefault();
-    //    if (client) {
-    //        client.recevied_time = data.timespan;
-    //        client.ip = data.ip;
-    //        control.emit('log', `${socket.client.id}-${data.ip ? socket.handshake.address : data.ip}-${new Date(data.timespan).format('yyyy-MM-dd hh:mm:ss')}-\n${data.data}`);
-    //    }
-    //    else {
-    //        let error = `cannot find terminal[${socket.client.id}],maybe was disconnected.`;
-    //        data.error = error;
-    //        control.emit('log', error);
-    //    }
-    //} else {
-    //    control.emit('log', data.error);
-    //}
-    //
-    //if (async == 0) {
-    //
-    //    db.client.hmset('box-server:sid:' + data.id, {
-    //        'id': data.id,
-    //        'recevied_data': data.data,
-    //        'recevied_time': data.timespan,
-    //        'error': data.error
-    //    });
-    //
-    //    db.client.expire('box-server:sid:' + data.id, 600);
-    //}
-}

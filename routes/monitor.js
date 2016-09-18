@@ -8,8 +8,8 @@ router.get('/client', async function (ctx, next) {
 
     await ctx.render('monitor/client', {
         clients: socket_server.clients,
-        connects: socket_server.terminal != 'undefined' ? socket_server.terminal.connected : null
-});
+        connects: socket_server.terminal ? socket_server.terminal.connected : null
+    });
 });
 
 module.exports = router;
