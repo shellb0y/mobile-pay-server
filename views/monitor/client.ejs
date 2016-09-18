@@ -44,17 +44,18 @@
         <th>ID</th>
         <th>IP</th>
         <th>Address</th>
-        <th>Send Time</th>
         <th>Receive Time</th>
+        <th>Message</th>
     </tr>
-    <% clients.forEach(function(m){ %>
-    <td><%= m.id %></td>
-    <td><%= m.ip %></td>
-    <td><%= m.address %></td>
-    <td><%= new Date(m.send_time).format('yyyy-MM-dd hh:mm:ss') %></td>
-    <td><%= new Date(m.recevied_time).format('yyyy-MM-dd hh:mm:ss') %></td>
+    <% for(var i in clients){ %>
+    <tr>
+        <td><%= clients[i].id %></td>
+        <td><%= clients[i].ip %></td>
+        <td><%= clients[i].address %></td>
+        <td><%= new Date(clients[i].recevied_time).format('yyyy-MM-dd hh:mm:ss') %></td>
+        <td><%= clients[i].message %></td>
     </tr>
-    <% }) %>
+    <% } %>
 </table>
 <br/>
 <br/>
@@ -66,10 +67,11 @@
         <th>Time</th>
     </tr>
     <% if(connects && connects != 'undefined'){for(var key in connects){ %>
-    <td><%= connects[key].id %></td>
-    <td><%= connects[key].connected %></td>
-    <td><%= connects[key].disconnected %></td>
-    <td><%= new Date(connects[key].handshake.time).format('yyyy-MM-dd hh:mm:ss') %></td>
+    <tr>
+        <td><%= connects[key].id %></td>
+        <td><%= connects[key].connected %></td>
+        <td><%= connects[key].disconnected %></td>
+        <td><%= new Date(connects[key].handshake.time).format('yyyy-MM-dd hh:mm:ss') %></td>
     </tr>
     <% }} %>
 </table>

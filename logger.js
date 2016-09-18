@@ -21,14 +21,17 @@ exports.t = (message)=>{
 };
 
 exports.i = (message)=>{
-    send2Server("DEBUG",message);
+    console.log(message);
+    send2Server("INFO",message);
 };
 
 exports.w = (message)=>{
+    console.log(message);
     send2Server("WARN",message);
 };
 
 exports.d = (message)=>{
+    console.log(message);
     send2Server("DEBUG",message);
 };
 

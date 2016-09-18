@@ -9,8 +9,9 @@ require('./string_ex');
 var db = require('./models/db');
 var sander = require('sander');
 var io;
+var logger = require('./logger');
 
-var clients = [];
+var clients = {};
 var terminal, control;
 
 exports.clients = clients;
@@ -21,17 +22,17 @@ exports.___init__ = (server)=> {
 
     terminal = io.of('/terminal').on('connection', (socket)=> {
 
-        clients.push({
+        clients[socket.client.id] = {
             'id': socket.client.id,
             'address': socket.handshake.address,
-            'send_time': 0,
             'recevied_time': socket.handshake.issued,
-            'ip': socket.handshake.address
-        });
+            'ip': socket.handshake.address,
+            'message': ''
+        };
 
         exports.terminal = terminal;
         //console.log(terminal.connected);
-        console.log(`terminal ${socket.client.id},${socket.handshake.address} on ${socket.handshake.time} connected.`);
+        logger.i(`terminal ${socket.client.id},${socket.handshake.address} on ${socket.handshake.time} connected.`);
 
         socket.on('upload_image', (data)=> {
             console.log(`upload image ${data.name}`);
@@ -66,13 +67,21 @@ exports.___init__ = (server)=> {
                         console.log("save order faild");
                 });
             }
-        }).on('disconnect', ()=> {
-            console.log(`termnal ${socket.client.id},${socket.handshake.address} on ${new Date()} disconnected.`);
-            let client = Enumerable.from(clients).where(`$ && $.id=='${socket.client.id}'`).singleOrDefault();
-            if (client) {
-                delete clients[clients.indexOf(client)];
+        }).on('message', (ip, msg)=> {
+            if (!msg) {
+                clients[socket.client.id].ip = ip;
+            } else {
+                console.log(msg);
+                clients[socket.client.id].message = msg;
+                clients[socket.client.id].recevied_time = new Date();
             }
-
+        }).on('disconnect', ()=> {
+            logger.i(`termnal ${socket.client.id},${socket.handshake.address} on ${new Date()} disconnected.`);
+            //let client = Enumerable.from(clients).where(`$ && $.id=='${socket.client.id}'`).singleOrDefault();
+            //if (client) {
+            //    delete clients[clients.indexOf(client)];
+            //}
+            delete clients[socket.client.id];
             socket = null;
         });
     });
