@@ -13,15 +13,22 @@ router.post('/order', async function (ctx, next) {
     ctx.body = order.order_id;
 });
 
-router.put('/order/status/:id/:status', async function (ctx, next) {
+router.put('/order/status/:id', async function (ctx, next) {
     var order = await db.order.findById(ctx.params.id);
     order.status = ctx.request.body.status;
+    order.callback_status = ctx.request.body.callback_status;
+    ctx.body = await order.save();
+});
+
+router.put('/order/status/:id/:status', async function (ctx, next) {
+    var order = await db.order.findById(ctx.params.id);
+    order.status = ctx.params.status;
     ctx.body = await order.save();
 });
 
 router.put('/order/callback_status/:id/:status', async function (ctx, next) {
     var order = await db.order.findById(ctx.params.id);
-    order.callback_status = ctx.request.body.status;
+    order.callback_status = ctx.params.status;
     ctx.body = await order.save();
 });
 
