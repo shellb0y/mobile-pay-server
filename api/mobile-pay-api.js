@@ -17,7 +17,9 @@ router.put('/order/status/:id', async function (ctx, next) {
     var order = await db.order.findById(ctx.params.id);
     order.status = ctx.request.body.status;
     order.callback_status = ctx.request.body.callback_status;
-    ctx.body = await order.save();
+    order.modified = new Date();
+    await order.save();
+    ctx.body = 1;
 });
 
 router.put('/order/status/:id/:status', async function (ctx, next) {
