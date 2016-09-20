@@ -12,6 +12,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: false
         },
+        origin_serial: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         order_number: {
             type: DataTypes.STRING,
             allowNull: false
