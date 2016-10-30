@@ -39,15 +39,18 @@ router.use('/console', _console.routes(), _console.allowedMethods());
 router.use('/api/mobilepay', mobile_pay_api.routes(), mobile_pay_api.allowedMethods());
 router.use('/monitor', monitor.routes(), monitor.allowedMethods());
 router.use('/upload', upload.routes(), upload.allowedMethods());
+router.use('/api/order', upload.routes(), upload.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response
 
-app.on('error',async function (err, ctx, next) {
-    console.log(err);
-    logger.error('server error', err, ctx);
-    await next();
-});
+onerror(app);
+
+//app.on('error',async function (err, ctx, next) {
+//    console.log(ctx);
+//    logger.error('server error', err, ctx);
+//    await next();
+//});
 
 
 module.exports = app;
