@@ -17,6 +17,7 @@ db.sequelize = sequelize;
 
 db.pay_account = sequelize.import('./pay_account');
 db.ticket_order = sequelize.import('./ticket_order');
+db.account = sequelize.import('./account');
 
 
 module.exports = db;

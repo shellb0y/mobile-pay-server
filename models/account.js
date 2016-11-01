@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('ticket_order', {
-    order_id: {
+  return sequelize.define('account', {
+    account_id: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -12,23 +12,19 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.JSON,
       allowNull: false
     },
-    _status: {
+    _source: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    ext: {
-      type: DataTypes.JSON,
-      allowNull: true
-    },
-    created: {
-      type: DataTypes.DATE,
+    get_count_today: {
+      type: DataTypes.INTEGER(11),
       allowNull: false
     },
-    modified: {
+    get_time: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     }
   }, {
-    tableName: 'ticket_order'
+    tableName: 'account'
   });
 };

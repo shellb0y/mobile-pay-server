@@ -19,11 +19,35 @@ var db = require('../models/db');
 //    where: db.sequelize.where(db.sequelize.fn('json_extract', db.sequelize.col('_data'), '$.name'), 'David1')
 //}).then((td)=>console.log(td));
 //
-db.sequelize.query("select * from ticket_order where json_extract(_data,'$.name')='David1'",
-    {type: db.sequelize.QueryTypes.SELECT/*,model:db.ticket_order*/}).then((to)=> {
-    console.log(to);
-});
+
+//db.sequelize.query("select * from ticket_order where json_extract(_data,'$.name')='David1'",
+//    {type: db.sequelize.QueryTypes.SELECT/*,model:db.ticket_order*/}).then((to)=> {
+//    console.log(to);
+//});
 
 //db.ticket_order.findOne({where: {order_id: 1}}).then((to)=> {
 //    console.log(to.get({'plain': true}));
+//});
+
+
+//var readline = require('readline'),
+//    fs = require('fs');
+//
+//var rl = readline.createInterface({
+//    input: fs.createReadStream('account'),
+//    output: process.stdout,
+//    terminal: false
+//});
+//
+//rl.on('line', function (line) {
+//    db.account.create({
+//            _data: {
+//                username: line.split('----')[0],
+//                password:line.split('----')[1]
+//            },
+//            _source: 'tuniu',
+//            get_count_today: 0,
+//            get_time: new Date()
+//        }
+//    ).then((data)=>console.log(`${data} success`));
 //});
