@@ -12,7 +12,7 @@ router.get('/payaccount/:temrinal_ip', async function (ctx, next) {
 
 router.get('/account/:source', async function (ctx, next) {
     //var account = await db.account.findOne({
-    //    where: {_source: ctx.params.source},
+    //    where: {_source: ctx.params.source,get_time:{$lt:6}},
     //    order: 'get_count_today,get_time',
     //    limit: 1
     //});
