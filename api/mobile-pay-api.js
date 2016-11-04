@@ -17,7 +17,7 @@ router.get('/account/:source', async function (ctx, next) {
     //    limit: 1
     //});
 
-    var account = await db.account.findById(3);
+    var account = await db.account.findById(1);
     account.get_time = new Date();
     account.get_count_today = account.get_count_today + 1;
     account.save();
@@ -122,6 +122,9 @@ router.post('/order', async function (ctx, next) {
 router.put('/order/status/:id/:status', async function (ctx, next) {
     var order = await db.ticket_order.findById(ctx.params.id);
     order._status = ctx.params.status;
+
+    if (ctx.request.body)
+        order.ext = ctx.request.body;
     await order.save();
 
     ctx.body = 1;

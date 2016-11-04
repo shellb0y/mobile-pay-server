@@ -16,6 +16,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
+    pay:{
+      type: DataTypes.JSON,
+      allowNull: true
+    },
     ext: {
       type: DataTypes.JSON,
       allowNull: true
