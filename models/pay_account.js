@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     terminal: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     enabled: {
       type: DataTypes.INTEGER(11),
@@ -27,6 +27,18 @@ module.exports = function(sequelize, DataTypes) {
     },
     pay_pwd: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    balance: {
+      type: DataTypes.DECIMAL,
+      allowNull: false
+    },
+    today_pay_count: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false
+    },
+    last_pay_time: {
+      type: DataTypes.DATE,
       allowNull: false
     }
   }, {

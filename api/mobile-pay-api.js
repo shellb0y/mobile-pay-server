@@ -6,8 +6,22 @@ var db = require('../models/db');
 var mutex = require('node-mutex')({host: '120.26.213.143'});
 var request = require('request');
 
-router.get('/payaccount/:temrinal_ip', async function (ctx, next) {
-    ctx.body = await db.pay_account.findOne({where: {terminal: ctx.params.temrinal_ip, enabled: 1}});
+router.get('/payaccount', async function (ctx, next) {
+    ctx.body = await db.pay_account.findOne({where: {enabled: 1}});
+});
+
+router.put('/payaccount/:id', async function (ctx, next) {
+    var account = await db.pay_account.findById(ctx.params.id);
+    console.log(ctx.request.body.price);
+    if (account) {
+        account.today_pay_count = account.today_pay_count + 1;
+        account.balance = account.balance - ctx.request.body.price;
+        account.last_pay_time = new Date();
+        await account.save();
+        ctx.body = 1;
+    } else {
+        ctx.body = 0;
+    }
 });
 
 router.get('/account/:source', async function (ctx, next) {
@@ -17,7 +31,7 @@ router.get('/account/:source', async function (ctx, next) {
     //    limit: 1
     //});
 
-    var account = await db.account.findById(1);
+    var account = await db.account.findById(2);
     account.get_time = new Date();
     account.get_count_today = account.get_count_today + 1;
     account.save();
@@ -66,7 +80,7 @@ router.put('/account/:id', async function (ctx, next) {
 //    }, 4000);
 //});
 
-router.get('/order', async function (ctx, next) {
+router.get('/order/pay', async function (ctx, next) {
     //var err;
     //var test = await promise_test.catch((e)=> {
     //    console.log('mutex error');
@@ -95,11 +109,10 @@ router.get('/order', async function (ctx, next) {
             throw new Error(e);
     });
 
-    var order = await db.ticket_order.findOne({where: {_status: '待支付'}, limit: 1, order: 'created'});
-    order._status = '正在支付';
-    order._version = order._version + 1;
-    await order.save();
-    ctx.body = order.order_id;
+    var order = await db.ticket_order.findOne({where: {_status: '下单成功'}, limit: 1, order: 'created'});
+    //order._status = '正在支付';
+    //await order.save();
+    ctx.body = order.pay;
 
     unlock();
 });
@@ -121,12 +134,18 @@ router.post('/order', async function (ctx, next) {
 
 router.put('/order/status/:id/:status', async function (ctx, next) {
     var order = await db.ticket_order.findById(ctx.params.id);
-    order._status = ctx.params.status;
+    if (order) {
+        order._status = decodeURIComponent(ctx.params.status);
 
-    if (ctx.request.body)
-        order.ext = ctx.request.body;
-    await order.save();
+        if (ctx.request.body == '下单失败')
+            order.ext = ctx.request.body;
+        else if (ctx.request.body == '下单成功')
+            order.pay = ctx.request.body;
 
+        await order.save();
+    } else {
+        ctx.body = 0;
+    }
     ctx.body = 1;
 });
 
