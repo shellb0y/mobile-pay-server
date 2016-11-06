@@ -99,20 +99,25 @@ router.get('/order/pay', async function (ctx, next) {
     //    ctx.body = test;
     //}
 
-    var unlock = await mutex.lock('key').catch((e)=> {
-        console.log('mutex error');
-        console.log(e);
+    var unlock = await mutex.lock('key');
 
-        if (e instanceof Error)
-            throw e;
-        else
-            throw new Error(e);
-    });
+    //.catch((e)=> {
+    //    console.log('mutex error');
+    //    console.log(e);
+    //
+    //    if (e instanceof Error)
+    //        throw e;
+    //    else
+    //        throw new Error(e);
+    //});
 
     var order = await db.ticket_order.findOne({where: {_status: '下单成功'}, limit: 1, order: 'created'});
     //order._status = '正在支付';
     //await order.save();
-    ctx.body = order.pay;
+    if (order)
+        ctx.body = order.pay;
+    else
+        ctx.status = 204;
 
     unlock();
 });
@@ -137,9 +142,9 @@ router.put('/order/status/:id/:status', async function (ctx, next) {
     if (order) {
         order._status = decodeURIComponent(ctx.params.status);
 
-        if (ctx.request.body == '下单失败')
+        if (order._status == '下单失败')
             order.ext = ctx.request.body;
-        else if (ctx.request.body == '下单成功')
+        else if (order._status == '下单成功')
             order.pay = ctx.request.body;
 
         await order.save();
