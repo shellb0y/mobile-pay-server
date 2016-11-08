@@ -10,7 +10,8 @@ var commands = [
     {regex: /^service (.*) start$/, action: service_start},
     {regex: /^service (.*) stop$/, action: service_stop},
     {regex: /^service (.*) restart$/, action: service_restart},
-    {regex: /^terminal (.*) reboot$/, action: terminal_reboot}
+    {regex: /^terminal (.*) reboot$/, action: terminal_reboot},
+    {regex: /^send (.*) smscode/, action: terminal_send_smscode}
 ];
 
 var sock;
@@ -24,7 +25,6 @@ exports.exec = function (command, sockets, clients, socket) {
         if (commands[i].regex.test(command)) {
             valid = true;
             var _commands = command.split(' ');
-            //if (_commands[0] == 'service') {
             _commands = _commands.splice(1, _commands.length - 2);
             var socket_ids = [];
             if (_commands[0] == 'all') {
@@ -41,10 +41,13 @@ exports.exec = function (command, sockets, clients, socket) {
                 }
             }
 
-            commands[i].action(socket_ids, sockets, clients);
-            //} else {
-            //
-            //}
+
+            if (_commands[1] == 'smscode') {
+                var _command = command.split(' ');
+                commands[i].action(socket_ids, sockets, clients, command.split(' ').splice(3, 2));
+            } else {
+                commands[i].action(socket_ids, sockets, clients);
+            }
         }
     }
 
@@ -76,6 +79,13 @@ function service_restart(socket_ids, sockets, clients) {
 function terminal_reboot(socket_ids, sockets, clients) {
     for (var id of socket_ids) {
         sockets[id].emit('control', 'reboot');
+        sock.emit('log', `${id} ${clients[id.replace('/terminal#', '')].ip} send success`);
+    }
+}
+
+function terminal_send_smscode(socket_ids, sockets, clients, data) {
+    for (var id of socket_ids) {
+        sockets[id].emit('smscode', data[0], data[1]);
         sock.emit('log', `${id} ${clients[id.replace('/terminal#', '')].ip} send success`);
     }
 }
