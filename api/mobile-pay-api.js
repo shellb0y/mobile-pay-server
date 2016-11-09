@@ -31,7 +31,7 @@ router.get('/account/:source', async function (ctx, next) {
     //    limit: 1
     //});
 
-    var account = await db.account.findById(2);
+    var account = await db.account.findById(1);
     account.get_time = new Date();
     account.get_count_today = account.get_count_today + 1;
     account.save();
@@ -114,8 +114,12 @@ router.get('/order/pay', async function (ctx, next) {
     var order = await db.ticket_order.findOne({where: {_status: '下单成功'}, limit: 1, order: 'created'});
     //order._status = '正在支付';
     //await order.save();
-    if (order)
-        ctx.body = order.pay;
+
+    if (order) {
+        var data = JSON.parse(order.pay);
+        data['orderId'] = order.order_id;
+        ctx.body = data;
+    }
     else
         ctx.status = 204;
 
