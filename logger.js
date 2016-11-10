@@ -2,12 +2,12 @@
  * Created by zt on 16/7/18.
  */
 var dgram = require('dgram');
-var host = '192.168.1.93';
+var host = '115.28.102.142';
 var port = 55514;
 
 function send2Server(level,message){
     var client = dgram.createSocket('udp4');
-    var data = {'appname':'mps','message':message,'level':level};
+    var data = {'program':'check_tuniu','message':message,'@fields.levelname':level};
     data = JSON.stringify(data);
     var message = new Buffer(data);
     client.send(data, 0, message.length, port, host, function (err, bytes) {

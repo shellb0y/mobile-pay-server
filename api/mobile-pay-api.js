@@ -31,7 +31,7 @@ router.get('/account/:source', async function (ctx, next) {
     //    limit: 1
     //});
 
-    var account = await db.account.findById(1);
+    var account = await db.account.findById(4);
     account.get_time = new Date();
     account.get_count_today = account.get_count_today + 1;
     account.save();
@@ -99,7 +99,7 @@ router.get('/order/pay', async function (ctx, next) {
     //    ctx.body = test;
     //}
 
-    var unlock = await mutex.lock('key');
+    //var unlock = await mutex.lock('key');
 
     //.catch((e)=> {
     //    console.log('mutex error');
@@ -123,13 +123,13 @@ router.get('/order/pay', async function (ctx, next) {
     else
         ctx.status = 204;
 
-    unlock();
+    //unlock();
 });
 
 
 router.post('/order', async function (ctx, next) {
     console.log(ctx.request.body);
-    var order = await db.ticket_order.create({_data: ctx.request.body, _status: '正在下单', created: new Date()});
+    var order = await db.ticket_order.create({check_partner_num:0,_data: ctx.request.body, _status: '正在下单', created: new Date()});
     ctx.body = order.order_id
 });
 
