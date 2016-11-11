@@ -25,19 +25,19 @@ router.put('/payaccount/:id', async function (ctx, next) {
 });
 
 router.get('/account/:source', async function (ctx, next) {
-    //var account = await db.account.findOne({
-    //    where: {_source: ctx.params.source,get_time:{$lt:6}},
-    //    order: 'get_count_today,get_time',
-    //    limit: 1
-    //});
+    var account = await db.account.findOne({
+        where: {_source: ctx.params.source,get_count_today:{$lte:10}},
+        order: 'get_count_today,get_time'
+    });
 
-    var account = await db.account.findById(4);
-    account.get_time = new Date();
-    account.get_count_today = account.get_count_today + 1;
-    account.save();
+    //var account = await db.account.findById(5);
 
-    if (account)
+    if (account) {
+        account.get_time = new Date();
+        account.get_count_today = account.get_count_today + 1;
+        account.save();
         ctx.body = {id: account.account_id, data: account._data};
+    }
     else {
         ctx.status = 204;
     }

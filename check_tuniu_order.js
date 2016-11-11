@@ -34,6 +34,7 @@ async function order_cancel(order) {
         logger.e(err);
     });
 
+    //var touristId='';
     if (resp && resp.success) {
         var touristId = resp.data.touristsInfo[0].touristId;
 
@@ -53,6 +54,9 @@ async function order_cancel(order) {
         });
 
         if (resp && resp.success) {
+            if (order._status == '抢票中')
+                touristId = '';
+
             options = {
                 method: 'GET',
                 url: `http://m.tuniu.com/onlineBook/onlineBookTrain/trainCancelOrderAjax?data=%7B%22orderId%22%3A${pay.bizOrderId}%2C%22orderType%22%3A38%2C%22touristIds%22%3A%22${touristId}%22%7D`,
@@ -75,9 +79,11 @@ async function order_cancel(order) {
             order._status = success ? "退票中" : "退票失败";
             order.save().then((_o)=> {
                 logger.i(`${order.order_id},${pay.bizOrderId} status[${order._status}] update success`);
-            }).catch((err)=>{
+            }).catch((err)=> {
                 logger.e(`${order.order_id},${pay.bizOrderId} status[${order._status}] update faild`);
             });
+
+
         } else {
             logger.e(`trainApplyLoss faild ${order.order_id} ${pay.bizOrderId},response:${JSON.stringify(resp)}`);
         }
@@ -91,7 +97,10 @@ check_tuniu_order.prototype.order_cancel = order_cancel;
 check_tuniu_order.prototype.exec = function () {
     setInterval(()=> {
         logger.i('check tuniu starting...');
-        db.ticket_order.findAll({where: {_status: ['支付成功','退票中']}, order: 'order_id'}).then((orders)=> {
+        db.ticket_order.findAll({
+            where: {_status: ['支付成功', '退票中', '退票失败', '未付款', '待出票','处理中']},
+            order: 'order_id'
+        }).then((orders)=> {
             orders.forEach(async (o)=> {
 
                 var pay = JSON.parse(o.pay);
@@ -120,12 +129,30 @@ check_tuniu_order.prototype.exec = function () {
                 request.get(options).then((response)=> {
                     logger.d(`GET ${o.order_id},${pay.bizOrderId} response:\n${JSON.stringify(response)}`);
                     if (response.success) {
-                        o._status = response.data.payStatusName;
+                        o._status = response.data.statusName;
                         o.save().then((d)=> {
                             logger.i(`${o.order_id},${pay.bizOrderId} status [${o._status}] update success`);
                         }).catch((err)=> {
                             logger.e(`${o.order_id},${pay.bizOrderId} status [${o._status}] update faild.\n${err}`);
                         });
+
+                        if (o._status == "已取消" || o._status == '退票成功') {
+                            options = {
+                                method: 'GET',
+                                url: `http://op.yikao666.cn/JDTrainOpen/CallBackReturnTicketForTN?type=2&orderid=${pay.partner_order_id}&success=true&ReturnMoney=${pay.price}`,
+                                json: true
+                            };
+
+                            request(options).then((_response)=> {
+                                if (_response.statusCode)
+                                    logger.i(`partner callback success ${o.order_id} ${pay.bizOrderId}`);
+                                else
+                                    logger.e(`partner callback faild ${o.order_id} ${pay.bizOrderId},response:${JSON.stringify(resp)}`);
+                            }).catch((err)=> {
+                                logger.e(`partner callback error ${o.order_id} ${pay.bizOrderId}`);
+                                logger.e(err);
+                            });
+                        }
                     } else {
                         logger.e(`GET ${o.order_id},${pay.bizOrderId} response faild`);
                     }
@@ -139,7 +166,7 @@ check_tuniu_order.prototype.exec = function () {
 
         db.ticket_order.findAll({
             where: {
-                _status: '已付款完成', $or: {_status: '未入库', check_partner_num: {$lt: 6}}
+                $or: {_status: '购票成功', $and: {_status: '未入库', check_partner_num: {$lt: 6}}}
             }, order: 'check_partner_num,order_id'
         }).then((orders)=> {
             orders.forEach((o)=> {
@@ -173,7 +200,9 @@ check_tuniu_order.prototype.exec = function () {
 
         db.ticket_order.findAll({
             where: {
-                _status: '未入库', check_partner_num: {$gte: 6}
+                $or: {
+                    _status: '抢票中', $and: {_status: '未入库', check_partner_num: {$gte: 6}}
+                }
             }, order: 'order_id'
         }).then((orders)=> {
             orders.forEach(async (o)=> {

@@ -21,6 +21,12 @@ var data = crypto.publicEncrypt({key: pem, padding: crypto.constants.RSA_PKCS1_P
 
 console.log(data.toString('base64'));
 
+if(0)
+    console.log("0");
+else{
+    console.log("1");
+}
+
 //var sign_util = require('../SignUtil');
 //var a= new sign_util();
 //console.log(a.encrypt('573.0'));
