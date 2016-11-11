@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('demo:server');
 var http = require('http');
+var check_tuniu_order = require('../check_tuniu_order');
 
 /**
  * Get port from environment and store in Express.
@@ -21,7 +22,7 @@ var port = normalizePort(process.env.PORT || '8000');
 
 var server = http.createServer(app.callback());
 require('../socket-server').___init__(server);
-require('../check_tuniu_order')().exec();
+new check_tuniu_order().exec();
 
 /**
  * Listen on provided port, on all network interfaces.
