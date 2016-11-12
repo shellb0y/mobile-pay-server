@@ -2,6 +2,7 @@
  * Created by zt on 16/10/30.
  */
 var db = require('../models/db');
+require('../date_ex');
 
 //for(i=2;i<10000;i++) {
 //    db.ticket_order.create({
@@ -51,3 +52,18 @@ var db = require('../models/db');
 //        }
 //    ).then((data)=>console.log(`${data} success`));
 //});
+
+db.ticket_order.findAll({
+    where: {
+        $or: {
+            _status: '抢票中',
+            $and: {
+                _status: '未入库',
+                check_partner_num: {$gte: 6}
+            },
+            $and: {_status: '待出票', created: {$lt: new Date().format('yyyy-MM-dd')}}
+        }
+    }, order: 'order_id'
+}).then((data)=>{
+    console.log(data);
+});

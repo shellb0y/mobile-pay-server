@@ -3,11 +3,14 @@
  */
 var router = require('koa-router')();
 var db = require('../models/db');
-var mutex = require('node-mutex')({host: '120.26.213.143'});
+var mutex = require('node-mutex')({host: '115.28.102.142'});
 var request = require('request');
 
-router.get('/payaccount', async function (ctx, next) {
-    ctx.body = await db.pay_account.findOne({where: {enabled: 1}});
+router.get('/payaccount/:name?', async function (ctx, next) {
+    if(ctx.params.name)
+        ctx.body = await db.pay_account.findOne({where: {account:ctx.params.name,enabled: 1}});
+    else
+        ctx.body = await db.pay_account.findOne({where: {enabled: 1}});
 });
 
 router.put('/payaccount/:id', async function (ctx, next) {
@@ -99,17 +102,15 @@ router.get('/order/pay', async function (ctx, next) {
     //    ctx.body = test;
     //}
 
-    //var unlock = await mutex.lock('key');
+    var unlock = await mutex.lock('key').catch((e)=> {
+        console.log('mutex error');
+        console.log(e);
 
-    //.catch((e)=> {
-    //    console.log('mutex error');
-    //    console.log(e);
-    //
-    //    if (e instanceof Error)
-    //        throw e;
-    //    else
-    //        throw new Error(e);
-    //});
+        if (e instanceof Error)
+            throw e;
+        else
+            throw new Error(e);
+    });
 
     var order = await db.ticket_order.findOne({where: {_status: '下单成功'}, limit: 1, order: 'created'});
     //order._status = '正在支付';
@@ -123,7 +124,7 @@ router.get('/order/pay', async function (ctx, next) {
     else
         ctx.status = 204;
 
-    //unlock();
+    unlock();
 });
 
 
@@ -150,6 +151,13 @@ router.put('/order/status/:id/:status', async function (ctx, next) {
             order.ext = ctx.request.body;
         else if (order._status == '下单成功')
             order.pay = ctx.request.body;
+        else if(order._status.indexOf('支付') > -1){
+            var pay = JSON.parse(order.pay);
+            pay['device_id'] = ctx.request.body.device_id;
+            pay['payaccount'] = ctx.request.body.payaccount;
+
+            order.pay = pay;
+        }
 
         await order.save();
     } else {
