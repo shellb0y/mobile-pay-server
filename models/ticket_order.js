@@ -39,6 +39,10 @@ module.exports = function(sequelize, DataTypes) {
     check_partner_num:{
       type:DataTypes.INTEGER(11),
       allowNull:false
+    },
+    version:{
+      type: DataTypes.INTEGER(11),
+      allowNull: true
     }
   }, {
     tableName: 'ticket_order'

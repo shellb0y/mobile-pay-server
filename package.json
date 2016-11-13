@@ -28,6 +28,7 @@
     "mysql": "^2.11.1",
     "node-mutex": "^0.2.2",
     "redis": "^2.6.3",
+    "redlock-node": "^2.1.2",
     "request": "^2.76.0",
     "request-promise": "^4.1.1",
     "runkoa": "^1.5.6",

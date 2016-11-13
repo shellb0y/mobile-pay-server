@@ -112,19 +112,26 @@ router.get('/order/pay', async function (ctx, next) {
             throw new Error(e);
     });
 
-    var order = await db.ticket_order.findOne({where: {_status: '下单成功'}, limit: 1, order: 'created'});
+    var order = await db.ticket_order.findOne({where: {version: 0}, limit: 1, order: 'created'});
+    order.version+=1;
+    await order.save();
+
+
+    //var order = await db.ticket_order.findOne({where: {_status: '下单成功'}, limit: 1, order: 'created'});
     //order._status = '正在支付';
     //await order.save();
 
-    if (order) {
-        var data = JSON.parse(order.pay);
-        data['orderId'] = order.order_id;
-        ctx.body = data;
-    }
-    else
-        ctx.status = 204;
+    //if (order) {
+    //    var data = JSON.parse(order.pay);
+    //    data['orderId'] = order.order_id;
+    //    ctx.body = data;
+    //}
+    //else
+    //    ctx.status = 204;
 
     unlock();
+
+    ctx.body = order.order_id;
 });
 
 
