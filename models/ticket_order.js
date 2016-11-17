@@ -40,6 +40,14 @@ module.exports = function(sequelize, DataTypes) {
       type:DataTypes.INTEGER(11),
       allowNull:false
     },
+    pay_channel:{
+      type:DataTypes.INTEGER(11),
+      allowNull:false
+    },
+    target:{
+      type:DataTypes.STRING,
+      allowNull: true
+    },
     version:{
       type: DataTypes.INTEGER(11),
       allowNull: true

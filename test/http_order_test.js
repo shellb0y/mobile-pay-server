@@ -24,7 +24,7 @@ var db = require('../models/db');
 //    console.log(body);
 //});
 
-var check_tuniu_order= require('../check_tuniu_order');
-var checkTuniuOrder= new check_tuniu_order();
-
-checkTuniuOrder.order_cancel(1005249190,{"username": "15728532201", "userid": 53652883, "sessionid": "629fd31db26f60cf7c9f1b02f670faa9", "password": "a256683", "userId": 53652883});
+//var check_tuniu_order= require('../check_tuniu_order');
+//var checkTuniuOrder= new check_tuniu_order();
+//
+//checkTuniuOrder.order_cancel(1005249190,{"username": "15728532201", "userid": 53652883, "sessionid": "629fd31db26f60cf7c9f1b02f670faa9", "password": "a256683", "userId": 53652883});

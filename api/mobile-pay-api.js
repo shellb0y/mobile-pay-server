@@ -3,12 +3,12 @@
  */
 var router = require('koa-router')();
 var db = require('../models/db');
-var mutex = require('node-mutex')({host: '115.28.102.142'});
+//var mutex = require('node-mutex')({host: '115.28.102.142'});
 var request = require('request');
 
 router.get('/payaccount/:name?', async function (ctx, next) {
-    if(ctx.params.name)
-        ctx.body = await db.pay_account.findOne({where: {account:ctx.params.name,enabled: 1}});
+    if (ctx.params.name)
+        ctx.body = await db.pay_account.findOne({where: {account: ctx.params.name, enabled: 1}});
     else
         ctx.body = await db.pay_account.findOne({where: {enabled: 1}});
 });
@@ -29,7 +29,7 @@ router.put('/payaccount/:id', async function (ctx, next) {
 
 router.get('/account/:source', async function (ctx, next) {
     var account = await db.account.findOne({
-        where: {_source: ctx.params.source,get_count_today:{$lte:10}},
+        where: {_source: ctx.params.source, get_count_today: {$lte: 10}},
         order: 'get_count_today,get_time'
     });
 
@@ -102,18 +102,18 @@ router.get('/order/pay', async function (ctx, next) {
     //    ctx.body = test;
     //}
 
-    var unlock = await mutex.lock('key').catch((e)=> {
-        console.log('mutex error');
-        console.log(e);
-
-        if (e instanceof Error)
-            throw e;
-        else
-            throw new Error(e);
-    });
+    //var unlock = await mutex.lock('key').catch((e)=> {
+    //    console.log('mutex error');
+    //    console.log(e);
+    //
+    //    if (e instanceof Error)
+    //        throw e;
+    //    else
+    //        throw new Error(e);
+    //});
 
     var order = await db.ticket_order.findOne({where: {version: 0}, limit: 1, order: 'created'});
-    order.version+=1;
+    order.version += 1;
     await order.save();
 
 
@@ -129,7 +129,7 @@ router.get('/order/pay', async function (ctx, next) {
     //else
     //    ctx.status = 204;
 
-    unlock();
+    //unlock();
 
     ctx.body = order.order_id;
 });
@@ -137,7 +137,14 @@ router.get('/order/pay', async function (ctx, next) {
 
 router.post('/order', async function (ctx, next) {
     console.log(ctx.request.body);
-    var order = await db.ticket_order.create({check_partner_num:0,_data: ctx.request.body, _status: '正在下单', created: new Date()});
+    var order = await db.ticket_order.create({
+        check_partner_num: 0,
+        _data: ctx.request.body,
+        target: ctx.request.body.target,
+        pay_channel: ctx.request.body.pay_channel,
+        _status: '正在下单',
+        created: new Date()
+    });
     ctx.body = order.order_id
 });
 
@@ -158,7 +165,7 @@ router.put('/order/status/:id/:status', async function (ctx, next) {
             order.ext = ctx.request.body;
         else if (order._status == '下单成功')
             order.pay = ctx.request.body;
-        else if(order._status.indexOf('支付') > -1){
+        else if (order._status.indexOf('支付') > -1) {
             var pay = JSON.parse(order.pay);
             pay['device_id'] = ctx.request.body.device_id;
             pay['payaccount'] = ctx.request.body.payaccount;
