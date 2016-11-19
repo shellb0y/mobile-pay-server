@@ -47,8 +47,9 @@ require('../date_ex');
 //                password:line.split('----')[1]
 //            },
 //            _source: 'tuniu',
-//            get_count_today: 0,
-//            get_time: new Date()
+//            get_count: 0,
+//            get_time: new Date(),
+//            order_count:0
 //        }
 //    ).then((data)=>console.log(`${data} success`));
 //});

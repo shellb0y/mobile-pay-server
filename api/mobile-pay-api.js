@@ -29,17 +29,30 @@ router.put('/payaccount/:id', async function (ctx, next) {
 
 router.get('/account/:source', async function (ctx, next) {
     var account = await db.account.findOne({
-        where: {_source: ctx.params.source, get_count_today: {$lte: 20}},
-        order: 'get_count_today,get_time'
+        where: {_source: ctx.params.source, order_count: {$lte: 3}},
+        order: 'get_count,get_time'
     });
 
     //var account = await db.account.findById(5);
 
     if (account) {
         account.get_time = new Date();
-        account.get_count_today = account.get_count_today + 1;
+        account.get_count += 1;
         account.save();
         ctx.body = {id: account.account_id, data: account._data};
+    }
+    else {
+        ctx.status = 204;
+    }
+});
+
+router.put('/account/ordercount/:id', async function (ctx, next) {
+    console.log(ctx.params.id);
+    var account = await db.account.findById(ctx.params.id);
+    if (account) {
+        account.order_count += 1;
+        account.save();
+        ctx.body = 1;
     }
     else {
         ctx.status = 204;
@@ -49,8 +62,6 @@ router.get('/account/:source', async function (ctx, next) {
 router.put('/account/:id', async function (ctx, next) {
     var account = await db.account.findById(ctx.params.id);
     account._data = ctx.request.body;
-    account.get_time = new Date();
-    account.get_count_today = account.get_count_today + 1;
     await account.save();
 
     ctx.body = 1;
