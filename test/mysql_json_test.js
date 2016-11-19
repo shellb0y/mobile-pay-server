@@ -53,17 +53,17 @@ require('../date_ex');
 //    ).then((data)=>console.log(`${data} success`));
 //});
 
-db.ticket_order.findAll({
-    where: {
-        $or: {
-            _status: '抢票中',
-            $and: {
-                _status: '未入库',
-                check_partner_num: {$gte: 6}
-            },
-            $and: {_status: '待出票', created: {$lt: new Date().format('yyyy-MM-dd')}}
-        }
-    }, order: 'order_id'
-}).then((data)=>{
-    console.log(data);
-});
+//db.ticket_order.findAll({
+//    where: {
+//        $or: {
+//            _status: '抢票中',
+//            $and: {
+//                _status: '未入库',
+//                check_partner_num: {$gte: 6}
+//            },
+//            $and: {_status: '待出票', created: {$lt: new Date().format('yyyy-MM-dd')}}
+//        }
+//    }, order: 'order_id'
+//}).then((data)=>{
+//    console.log(data);
+//});

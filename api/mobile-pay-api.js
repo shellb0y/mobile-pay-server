@@ -29,7 +29,7 @@ router.put('/payaccount/:id', async function (ctx, next) {
 
 router.get('/account/:source', async function (ctx, next) {
     var account = await db.account.findOne({
-        where: {_source: ctx.params.source, get_count_today: {$lte: 10}},
+        where: {_source: ctx.params.source, get_count_today: {$lte: 20}},
         order: 'get_count_today,get_time'
     });
 
