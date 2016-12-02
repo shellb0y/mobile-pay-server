@@ -27,6 +27,20 @@ router.put('/payaccount/:id', async function (ctx, next) {
     }
 });
 
+router.put('/account/cantuse/:id', async function (ctx, next) {
+    var account = await db.account.findById(ctx.params.id);
+
+    if (account) {
+        account.get_time = new Date();
+        account.order_count = 999;
+        account.save();
+        ctx.body = 1;
+    }
+    else {
+        ctx.status = 204;
+    }
+});
+
 router.get('/account/:source', async function (ctx, next) {
     var account = await db.account.findOne({
         where: {_source: ctx.params.source, order_count: {$lte: 3}},
