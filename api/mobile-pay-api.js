@@ -27,6 +27,22 @@ router.put('/payaccount/:id', async function (ctx, next) {
     }
 });
 
+router.post('/account/:source', async function (ctx, next) {
+    var account = {
+        _data: ctx.request.body,
+        _source: ctx.params.source,
+        get_count: 0,
+        get_time: new Date(),
+        order_count: 0
+    };
+
+    var _account = await db.account.create(account);
+    if(_account)
+        ctx.body= _account.account_id;
+    else
+        ctx.body = 0;
+});
+
 router.put('/account/cantuse/:id', async function (ctx, next) {
     var account = await db.account.findById(ctx.params.id);
 
