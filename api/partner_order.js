@@ -11,10 +11,55 @@ function md5(text) {
     return crypto.createHash('md5').update(text).digest('hex');
 }
 
+/**
+ * @api {post} /order 提交订单
+ * @apiName PostOrder
+ * @apiVersion 1.0.0
+ * @apiGroup Order
+ *
+ * @apiDescription 提交订单,注意签名时callback需要进行url编码
+ *
+ * @apiParam {String}   id            合作伙伴订单号
+ * @apiParam {String}   mobile        待充值的手机号
+ * @apiParam {String}   amount        金额,暂时只支持100元的话费充值
+ * @apiParam {String}   partner       合作伙伴名称
+ * @apiParam {String}   callback      回调地址
+ * @apiParam {Number}   t             时间戳
+ * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({amount}{urlencode(callback)}{id}{mobile}{partner}{secret(密钥)}{t})
+ *
+ * @apiExample Example usage:
+ * curl -d "amount={amount}&callback={urlencode(callback)}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}"
+ * "http://115.28.102.142:8000/v1/api/order"
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "success": true,
+ *       "data":{"order_id":"10000"}
+ *     }
+ *
+ * @apiError DATA_INVALID   parameter error.
+ * @apiError SIGN_INVALID   signature verification failed.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "success":false,
+ *       "error": {"code":"DATA_INVALID","message":"{parameter error}"}
+ *     }
+ *
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "success":false,
+ *       "error": {"code":"SIGN_INVALID","message":"signature verification failed."}
+ *     }
+ * */
 router.post('/order', async function (ctx, next) {
     var sign = ctx.request.body.sign;
     var t = ctx.request.body.t;
     var id = ctx.request.body.id;
+    var amount = ctx.request.body.amount;
+    var callback = ctx.request.body.callback;
     var mobile = ctx.request.body.mobile;
     var partner = ctx.request.body.partner;
     var secret = 'y(T|D/g6';
@@ -46,6 +91,18 @@ router.post('/order', async function (ctx, next) {
         ctx.body = ret;
         return;
     }
+    else if (!amount) {
+        ctx.status = 400;
+        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter amount'}};
+        ctx.body = ret;
+        return;
+    }
+    else if (!callback) {
+        ctx.status = 400;
+        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter callback'}};
+        ctx.body = ret;
+        return;
+    }
     else if (!secret) {
         ctx.status = 400;
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'partner invalid'}};
@@ -53,16 +110,24 @@ router.post('/order', async function (ctx, next) {
         return;
     }
 
-    var data = id + mobile + partner + secret + t;
+    if(!(parseFloat(amount) == 100)){
+        ctx.status = 400;
+        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'amount not support'}};
+        ctx.body = ret;
+        return;
+    }
+
+    var data = amount + id + callback + mobile + partner + secret + t;
     var _sign = md5(data);
 
     if (_sign == sign) {
         ctx.status = 202;
-        ret = {'success': true, 'data': {'order_id': 1}};
+        ctx.status = 202;
+        ret = {'success': true, 'data': {'order_id': 10000}};
     }
     else {
         ctx.status = 403;
-        ret = {'success': false, 'error': {'code': 'SIGN_VALID', 'message': 'signature verification failed'}}
+        ret = {'success': false, 'error': {'code': 'SIGN_INVALID', 'message': 'signature verification failed'}}
     }
 
     if (debug)
@@ -80,12 +145,12 @@ router.post('/order', async function (ctx, next) {
  *
  * @apiDescription 获取订单状态
  *
- * @apiPram {Number}   id            订单ID
- * @apiPram {Number}   t             时间戳
- * @apiPram {String}   sign          签名:md5({name}{secret(密钥)}{t})
+ * @apiParam {Number}   id            订单ID
+ * @apiParam {Number}   t             时间戳
+ * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({id}{partner}{secret(密钥)}{t})
  *
  * @apiExample Example usage:
- * curl -i http://localhost:8080/v1/api/order/status?id=&t=&sign=
+ * curl -i http://115.28.102.142:8000/v1/api/order/status?id={id}&t={t}&sign={sign}&partner={partner}
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -94,20 +159,20 @@ router.post('/order', async function (ctx, next) {
  *       "data":{"status":"等待处理|下单成功|下单失败|支付成功|支付失败"}
  *     }
  *
- * @apiError DATA_INVALID   missing parameter.
- * @apiError SIGN_VALID     signature verification failed.
+ * @apiError DATA_INVALID   parameter error.
+ * @apiError SIGN_INVALID   signature verification failed.
  *
  * @apiErrorExample Response (example):
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "success":false,
- *       "error": {"code":"DATA_INVALID","message":"missing parameter (name|t|sign)."}
+ *       "error": {"code":"DATA_INVALID","message":"{parameter error}"}
  *     }
  *
  *     HTTP/1.1 403 Forbidden
  *     {
  *       "success":false,
- *       "error": {"code":"SIGN_VALID","message":"signature verification failed."}
+ *       "error": {"code":"SIGN_INVALID","message":"signature verification failed."}
  *     }
  * */
 router.get('/order/status', async function (ctx, next) {
@@ -150,7 +215,7 @@ router.get('/order/status', async function (ctx, next) {
     }
     else {
         ctx.status = 403;
-        ret = {'success': false, 'error': {'code': 'SIGN_VALID', 'message': 'signature verification failed'}}
+        ret = {'success': false, 'error': {'code': 'SIGN_INVALID', 'message': 'signature verification failed'}}
     }
 
     if (debug)
@@ -168,12 +233,12 @@ router.get('/order/status', async function (ctx, next) {
  *
  * @apiDescription 获取合作伙伴账户余额
  *
- * @apiPram {String}   name          合作伙伴名称
- * @apiPram {Number}   t             时间戳
- * @apiPram {String}   sign          签名:md5({name}{secret(密钥)}{t})
+ * @apiParam {String}   partner       合作伙伴名称
+ * @apiParam {Number}   t             时间戳
+ * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({partner}{secret(密钥)}{t})
  *
  * @apiExample Example usage:
- * curl -i http://localhost:8080/v1/api/partner/balance?name=&t=&sign=
+ * curl -i http://115.28.102.142:8000/v1/api/partner/balance?partner={partner}&t={t}&sign={sign}
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -182,25 +247,25 @@ router.get('/order/status', async function (ctx, next) {
  *       "data":{"order_id":"10000"}
  *     }
  *
- * @apiError DATA_INVALID   missing parameter.
- * @apiError SIGN_VALID     signature verification failed.
+ * @apiError DATA_INVALID   parameter error.
+ * @apiError SIGN_INVALID   signature verification failed.
  *
  * @apiErrorExample Response (example):
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "success":false,
- *       "error": {"code":"DATA_INVALID","message":"missing parameter (name|t|sign)."}
+ *       "error": {"code":"DATA_INVALID","message":"{parameter error}"}
  *     }
  *
  *     HTTP/1.1 403 Forbidden
  *     {
  *       "success":false,
- *       "error": {"code":"SIGN_VALID","message":"signature verification failed."}
+ *       "error": {"code":"SIGN_INVALID","message":"signature verification failed."}
  *     }
  * */
 router.get('/partner/balance', async function (ctx, next) {
     var secret = 'y(T|D/g6';
-    var name = ctx.request.query.name;
+    var partner = ctx.request.query.partner;
     var sign = ctx.request.query.sign;
     var t = ctx.request.query.t;
     var ret = {};
@@ -215,14 +280,14 @@ router.get('/partner/balance', async function (ctx, next) {
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter t'}};
         ctx.body = ret;
         return;
-    } else if (!name) {
+    } else if (!partner) {
         ctx.status = 400;
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter id'}};
         ctx.body = ret;
         return;
     }
 
-    var data = name + secret + t;
+    var data = partner + secret + t;
     var _sign = md5(data);
 
     if (_sign == sign) {
@@ -231,7 +296,7 @@ router.get('/partner/balance', async function (ctx, next) {
     }
     else {
         ctx.status = 403;
-        ret = {'success': false, 'error': {'code': 'SIGN_VALID', 'message': 'signature verification failed'}}
+        ret = {'success': false, 'error': {'code': 'SIGN_INVALID', 'message': 'signature verification failed'}}
     }
 
     if (debug)

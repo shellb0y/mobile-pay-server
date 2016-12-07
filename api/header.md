@@ -1,7 +1,2 @@
-# Example text from footer.md
-
-This text is from file "footer.md".
-
-## HowTo include
-
-Watch header.md for further information.
+1.接入方使用分配的partner和secret进行接口测试
+2.测试接口数据都会返回debug节点,以便对照签名数据和结果
