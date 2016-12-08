@@ -1,8 +1,10 @@
 /**
  * Created by zt on 16/12/7.
  */
+'use strict'
 var router = require('koa-router')();
 var db = require('../models/db');
+var request = require('request-promise');
 var crypto = require('crypto');
 
 var debug = 1;
@@ -31,6 +33,14 @@ function md5(text) {
  * curl -d "amount={amount}&callback={urlencode(callback)}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}"
  * "http://115.28.102.142:8000/v1/api/order"
  *
+ * @apiExample Callback(GET):
+ * curl -i http://xxxxxx?partner_order_id={商户订单号}&trade_no={交易号}&amount={金额}&success={1(成功)|0(失败)}&t={时间戳}&sign=md5({amount}{partner_order_id}{secret(密钥)}{success}{t}{trade_no})
+ * HTTP/1.1 200
+ * {
+ *   "success":1(成功)|0(失败),
+ * }
+ * 注:如果返回0,会重试3次
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
@@ -55,6 +65,8 @@ function md5(text) {
  *     }
  * */
 router.post('/order', async function (ctx, next) {
+    console.log(ctx.request.body);
+
     var sign = ctx.request.body.sign;
     var t = ctx.request.body.t;
     var id = ctx.request.body.id;
@@ -124,6 +136,15 @@ router.post('/order', async function (ctx, next) {
         ctx.status = 202;
         ctx.status = 202;
         ret = {'success': true, 'data': {'trade_no': 'JDPH2016120810000000000001'}};
+        t = Date.now();
+        var _target = `${amount}${id}${secret}1${t}JDPH2016120810000000000001)`;
+        console.log('callback target:' + _target);
+        sign = md5(_target);
+        console.log('callback sign:' + sign);
+        var url = `${decodeURI(callback)}?partner_order_id=${id}&trade_no=JDPH2016120810000000000001&amount=${amount}&success=1&t=${t}&sign=${sign}`;
+        var resp = await request.get(url).catch((e)=>console.log(e));
+        console.log(resp);
+
     }
     else {
         ctx.status = 403;
