@@ -17,13 +17,13 @@ function md5(text) {
  * @apiVersion 1.0.0
  * @apiGroup Order
  *
- * @apiDescription 提交订单,注意签名时callback需要进行url编码
+ * @apiDescription 提交订单,注意签名和传输时callback需要进行url编码.
  *
- * @apiParam {String}   id            合作伙伴订单号
+ * @apiParam {String}   id            商户订单号
  * @apiParam {String}   mobile        待充值的手机号
  * @apiParam {String}   amount        金额,暂时只支持100元的话费充值
- * @apiParam {String}   partner       合作伙伴名称
- * @apiParam {String}   callback      回调地址
+ * @apiParam {String}   partner       商户号
+ * @apiParam {String}   callback      商户回调地址
  * @apiParam {Number}   t             时间戳
  * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({amount}{urlencode(callback)}{id}{mobile}{partner}{secret(密钥)}{t})
  *
@@ -35,7 +35,7 @@ function md5(text) {
  *     HTTP/1.1 200 OK
  *     {
  *       "success": true,
- *       "data":{"order_id":"10000"}
+ *       "data":{"trade_no":"JDPH2016120810000000000001"}
  *     }
  *
  * @apiError DATA_INVALID   parameter error.
@@ -110,7 +110,7 @@ router.post('/order', async function (ctx, next) {
         return;
     }
 
-    if(!(parseFloat(amount) == 100)){
+    if (!(parseFloat(amount) == 100)) {
         ctx.status = 400;
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'amount not support'}};
         ctx.body = ret;
@@ -123,7 +123,7 @@ router.post('/order', async function (ctx, next) {
     if (_sign == sign) {
         ctx.status = 202;
         ctx.status = 202;
-        ret = {'success': true, 'data': {'order_id': 10000}};
+        ret = {'success': true, 'data': {'trade_no': 'JDPH2016120810000000000001'}};
     }
     else {
         ctx.status = 403;
@@ -143,14 +143,15 @@ router.post('/order', async function (ctx, next) {
  * @apiVersion 1.0.0
  * @apiGroup Order
  *
- * @apiDescription 获取订单状态
+ * @apiDescription 通过交易号查询订单状态
  *
- * @apiParam {Number}   id            订单ID
+ * @apiParam {String}   trade_no      订单交易号
+ * @apiParam {String}   partner       商户号
  * @apiParam {Number}   t             时间戳
- * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({id}{partner}{secret(密钥)}{t})
+ * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({partner}{secret(密钥)}{t}{trade_no})
  *
  * @apiExample Example usage:
- * curl -i http://115.28.102.142:8000/v1/api/order/status?id={id}&t={t}&sign={sign}&partner={partner}
+ * curl -i http://115.28.102.142:8000/v1/api/order/status?trade_no={trade_no}&t={t}&sign={sign}&partner={partner}
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -177,7 +178,7 @@ router.post('/order', async function (ctx, next) {
  * */
 router.get('/order/status', async function (ctx, next) {
     var secret = 'y(T|D/g6';
-    var id = ctx.request.query.id;
+    var trade_no = ctx.request.query.trade_no;
     var sign = ctx.request.query.sign;
     var t = ctx.request.query.t;
     var partner = ctx.request.query.partner;
@@ -193,9 +194,9 @@ router.get('/order/status', async function (ctx, next) {
         ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter t'}};
         ctx.body = ret;
         return;
-    } else if (!id) {
+    } else if (!trade_no) {
         ctx.status = 400;
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter id'}};
+        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter trade_no'}};
         ctx.body = ret;
         return;
     } else if (!partner) {
@@ -231,9 +232,9 @@ router.get('/order/status', async function (ctx, next) {
  * @apiVersion 1.0.0
  * @apiGroup Order
  *
- * @apiDescription 获取合作伙伴账户余额
+ * @apiDescription 获取商户账户余额
  *
- * @apiParam {String}   partner       合作伙伴名称
+ * @apiParam {String}   partner       商户号
  * @apiParam {Number}   t             时间戳
  * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({partner}{secret(密钥)}{t})
  *
@@ -244,7 +245,7 @@ router.get('/order/status', async function (ctx, next) {
  *     HTTP/1.1 200 OK
  *     {
  *       "success": true,
- *       "data":{"order_id":"10000"}
+ *       "data":{"balance":9999.99}
  *     }
  *
  * @apiError DATA_INVALID   parameter error.
