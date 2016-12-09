@@ -282,7 +282,7 @@ router.get('/partner/balance', async function (ctx, next) {
         ctx.body = ret;
         return;
     } else if (!partner) {
-        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter id'}};
+        ret = {'success': false, 'error': {'code': 'DATA_INVALID', 'message': 'missing parameter partner'}};
         ctx.body = ret;
         return;
     }
