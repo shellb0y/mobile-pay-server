@@ -211,7 +211,7 @@ router.get('/order/status', async function (ctx, next) {
     }
 
     console.log(ctx.request.query.sign);
-    var data = id + partner + secret + t;
+    var data = partner + secret + t + trade_no;
     var _sign = md5(data);
 
     if (_sign == sign) {
