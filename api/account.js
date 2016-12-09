@@ -9,7 +9,8 @@ router.post('/tuniu/cookie/:mobile', async function (ctx, next) {
         {type: db.sequelize.QueryTypes.SELECT/*,model:db.ticket_order*/});
     if(account) {
         account[0].cookie = ctx.request.body.cookie;
-        db.sequelize.save();
+        db.account.update(account[0]);
+        ctx.body = 'success';
     }
     else{
         ctx.body = 'faild';
@@ -18,7 +19,17 @@ router.post('/tuniu/cookie/:mobile', async function (ctx, next) {
 });
 
 router.get('/tuniu',async function(ctx,next){
-    var account = await db.account.where({'cookie':null})
+    var account = await db.account.findOne({
+        where: {
+            $or: [
+                {cookie: ''},
+                {cookie: null}]
+        }});
+    if(account){
+        ctx.body = account._data;
+    }else{
+        ctx.body = '{}';
+    }
 });
 
 
