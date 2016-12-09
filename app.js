@@ -16,6 +16,7 @@ const mobile_pay_api = require('./api/mobile-pay-api');
 const monitor = require('./routes/monitor');
 const upload = require('./routes/upload');
 const partner_order = require('./api/partner_order');
+const account = require('./api/account');
 
 // middlewares
 app.use(convert(bodyparser));
@@ -49,6 +50,7 @@ router.use('/monitor', monitor.routes(), monitor.allowedMethods());
 router.use('/upload', upload.routes(), upload.allowedMethods());
 router.use('/api/order', upload.routes(), upload.allowedMethods());
 router.use('/v1/api', partner_order.routes(), partner_order.allowedMethods());
+router.use('/api/account', partner_order.routes(), partner_order.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response

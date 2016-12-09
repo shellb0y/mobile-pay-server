@@ -119,7 +119,7 @@ router.get('/order', async function (ctx, next) {
         return;
     }
 
-    var data = amount + id + callback + mobile + partner + secret + t;
+    var data = amount + callback + id + mobile + partner + secret + t;
     var _sign = md5(data);
 
     if (_sign == sign) {
@@ -304,8 +304,8 @@ router.get('/partner/balance', async function (ctx, next) {
     ctx.body = ret;
 });
 
-router.get('/test',async function(ctx){
-   ctx.body = ++debug;
+router.get('/test', async function (ctx) {
+    ctx.body = ++debug;
 });
 
 module.exports = router;

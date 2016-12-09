@@ -12,6 +12,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.JSON,
             allowNull: false
         },
+        cookie: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         _source: {
             type: DataTypes.STRING,
             allowNull: false

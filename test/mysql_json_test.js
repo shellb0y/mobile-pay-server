@@ -31,28 +31,28 @@ require('../date_ex');
 //});
 
 
-var readline = require('readline'),
-    fs = require('fs');
-
-var rl = readline.createInterface({
-    input: fs.createReadStream('account'),
-    output: process.stdout,
-    terminal: false
-});
-
-rl.on('line', function (line) {
-    db.account.create({
-            _data: {
-                username: line.split('----')[0],
-                password:line.split('----')[1]
-            },
-            _source: 'tuniu',
-            get_count: 0,
-            get_time: new Date(),
-            order_count:0
-        }
-    ).then((data)=>console.log(`${data} success`));
-});
+//var readline = require('readline'),
+//    fs = require('fs');
+//
+//var rl = readline.createInterface({
+//    input: fs.createReadStream('account'),
+//    output: process.stdout,
+//    terminal: false
+//});
+//
+//rl.on('line', function (line) {
+//    db.account.create({
+//            _data: {
+//                username: line.split('----')[0],
+//                password:line.split('----')[1]
+//            },
+//            _source: 'tuniu',
+//            get_count: 0,
+//            get_time: new Date(),
+//            order_count:0
+//        }
+//    ).then((data)=>console.log(`${data} success`));
+//});
 
 //db.ticket_order.findAll({
 //    where: {
@@ -68,3 +68,12 @@ rl.on('line', function (line) {
 //}).then((data)=>{
 //    console.log(data);
 //});
+
+//db.sequelize.query('select * from account where _data->"$.username"=\'13192655251\'',
+//    {type: db.sequelize.QueryTypes.SELECT/*,model:db.ticket_order*/}).then((to)=> {
+//    if(to){
+//        console.log(to[0].cookie);
+//    }
+//});
+//
+db.account.where({'cookie':null})
