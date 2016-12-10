@@ -31,7 +31,12 @@ module.exports = function (sequelize, DataTypes) {
         get_time: {
             type: DataTypes.DATE,
             allowNull: false
-        }, order_count: {
+        },
+        order_count: {
+            type: DataTypes.INTEGER(11),
+            allowNull: false
+        },
+        queue_count:{
             type: DataTypes.INTEGER(11),
             allowNull: false
         }

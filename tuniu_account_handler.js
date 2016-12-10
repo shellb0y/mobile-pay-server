@@ -19,10 +19,11 @@ tuniu_account_handler.prototype.exec = function () {
                     request({
                         method: 'PUT',
                         uri: 'http://139.199.65.115:1218/?name=tuniu_login&opt=put&auth=Fb@345!',
-                        body: a._data,
+                        body: JSON.parse(a._data),
                         json: true
                     }).then(function (repos) {
                             a._status = '等待登录';
+                            a.queue_count++;
                             a.save();
                         })
                         .catch(function (err) {
@@ -31,7 +32,7 @@ tuniu_account_handler.prototype.exec = function () {
                 });
             }
         });
-    }, 180 * 1000);
+    }, 300 * 1000);
 };
 
 module.exports = tuniu_account_handler;

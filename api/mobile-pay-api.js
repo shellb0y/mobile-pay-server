@@ -37,8 +37,8 @@ router.post('/account/:source', async function (ctx, next) {
     };
 
     var _account = await db.account.create(account);
-    if(_account)
-        ctx.body= _account.account_id;
+    if (_account)
+        ctx.body = _account.account_id;
     else
         ctx.body = 0;
 });
@@ -48,7 +48,8 @@ router.put('/account/cantuse/:id', async function (ctx, next) {
 
     if (account) {
         account.get_time = new Date();
-        account.order_count = 999;
+        //account.order_count = 999;
+        account._status = '下单失败';
         account.save();
         ctx.body = 1;
     }
@@ -59,7 +60,7 @@ router.put('/account/cantuse/:id', async function (ctx, next) {
 
 router.get('/account/:source', async function (ctx, next) {
     var account = await db.account.findOne({
-        where: {_source: ctx.params.source, order_count: {$lte: 3}},
+        where: {_status: '登录成功', order_count: {$lte: 3}},
         order: 'get_count,get_time'
     });
 
@@ -69,7 +70,7 @@ router.get('/account/:source', async function (ctx, next) {
         account.get_time = new Date();
         account.get_count += 1;
         account.save();
-        ctx.body = {id: account.account_id, data: account._data};
+        ctx.body = {id: account.account_id, data: account._data, cookie: account.cookie};
     }
     else {
         ctx.status = 204;
