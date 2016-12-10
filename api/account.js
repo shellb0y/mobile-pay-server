@@ -8,7 +8,10 @@ router.post('/tuniu/cookie', async function (ctx, next) {
     var account = await db.sequelize.query(`select * from account where _data->"$.username"='${ctx.request.body.username}'`,
         {type: db.sequelize.QueryTypes.SELECT/*,model:db.ticket_order*/});
     if (account) {
-        db.account.update({cookie: ctx.request.body.cookie}, {where: {account_id: account[0].account_id}});
+        db.account.update({
+            cookie: ctx.request.body.cookie,
+            _status: ctx.request.body.status
+        }, {where: {account_id: account[0].account_id}});
         ctx.body = 'success';
     }
     else {
