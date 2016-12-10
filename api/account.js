@@ -4,8 +4,8 @@
 var router = require('koa-router')();
 var db = require('../models/db');
 
-router.post('/tuniu/cookie/:mobile', async function (ctx, next) {
-    var account = await db.sequelize.query(`select * from account where _data->"$.username"='${ctx.params.mobile}'`,
+router.post('/tuniu/cookie', async function (ctx, next) {
+    var account = await db.sequelize.query(`select * from account where _data->"$.username"='${ctx.request.body.username}'`,
         {type: db.sequelize.QueryTypes.SELECT/*,model:db.ticket_order*/});
     if (account) {
         db.account.update({cookie: ctx.request.body.cookie}, {where: {account_id: account[0].account_id}});
@@ -13,7 +13,6 @@ router.post('/tuniu/cookie/:mobile', async function (ctx, next) {
     }
     else {
         ctx.body = 'faild';
-
     }
 });
 
