@@ -33,12 +33,11 @@ function md5(text) {
  * curl -i http://115.28.102.142:8000/v1/api/order?amount={amount}&callback={urlencode(callback)}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}
  *
  * @apiExample Callback(GET):
- * curl -i http://xxxxxx?partner_order_id={商户订单号}&trade_no={交易号}&amount={金额}&success={1(成功)|0(失败)}&t={时间戳}&sign=md5({amount}{partner_order_id}{secret(密钥)}{success}{t}{trade_no})
+ * curl -i http://xxxxxx?trade_no={交易号}&amount={金额}&success={1(成功)|0(失败)}&t={时间戳}&sign=md5({amount}{secret(密钥)}{success}{t}{trade_no})
  * HTTP/1.1 200
  * {
  *   "success":1(成功)|0(失败),
  * }
- * 注:如果返回0,会重试3次
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -125,11 +124,11 @@ router.get('/order', async function (ctx, next) {
     if (_sign == sign) {
         ret = {'success': true, 'data': {'trade_no': 'JDPH2016120810000000000001'}};
         t = Date.now();
-        var _target = `${amount}${id}${secret}1${t}JDPH2016120810000000000001)`;
+        var _target = `${amount}${secret}1${t}JDPH2016120810000000000001)`;
         console.log('callback target:' + _target);
         sign = md5(_target);
         console.log('callback sign:' + sign);
-        var url = `${decodeURI(callback)}?partner_order_id=${id}&trade_no=JDPH2016120810000000000001&amount=${amount}&success=1&t=${t}&sign=${sign}`;
+        var url = `${decodeURI(callback)}?trade_no=JDPH2016120810000000000001&amount=${amount}&success=1&t=${t}&sign=${sign}`;
         var resp = await request.get(url).catch((e)=>console.log(e));
         console.log(resp);
 

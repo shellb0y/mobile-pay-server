@@ -12,8 +12,8 @@ var tuniu_account_handler = function () {
 };
 
 tuniu_account_handler.prototype.exec = function () {
-    setInterval(()=> {
-        db.account.findAll({where: {_status: null,_source:'tuniu'},limit:3000}).then((accounts)=> {
+    //setInterval(()=> {
+        db.account.findAll({where: {_status: null,_source:'tuniu'},limit:2000}).then((accounts)=> {
             if (accounts) {
                 accounts.forEach((a)=> {
                     request({
@@ -32,7 +32,7 @@ tuniu_account_handler.prototype.exec = function () {
                 });
             }
         });
-    }, 300 * 1000);
+    //}, 1000);
 };
 
 module.exports = tuniu_account_handler;
