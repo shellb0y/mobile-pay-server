@@ -8,6 +8,7 @@ const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser')({formLimit: '5mb'});
 const logger = require('koa-logger');
+const compress = require('koa-compress');
 const __static = require('koa-static');
 
 //const index = require('./routes/index');
@@ -19,6 +20,7 @@ const partner_order = require('./api/partner_order');
 const account_api = require('./api/account');
 
 // middlewares
+app.use(convert(compress()));
 app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));

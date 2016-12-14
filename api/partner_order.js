@@ -307,4 +307,9 @@ router.get('/test', async function (ctx) {
     ctx.body = ++debug;
 });
 
+router.get('/testtest/order', async function (ctx) {
+    var orders = await db.ticket_order.findAll({limit:200});
+    ctx.body = orders;
+});
+
 module.exports = router;
