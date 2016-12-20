@@ -7,7 +7,7 @@ var db = require('../models/db');
 var request = require('request-promise');
 var crypto = require('crypto');
 
-var debug = 1;
+var debug = 0;
 
 function md5(text) {
     return crypto.createHash('md5').update(text).digest('hex');
@@ -19,7 +19,7 @@ function md5(text) {
  * @apiVersion 1.0.0
  * @apiGroup Order
  *
- * @apiDescription 提交订单,注意签名和传输时callback需要进行url编码.
+ * @apiDescription 提交订单
  *
  * @apiParam {String}   id            商户订单号
  * @apiParam {String}   mobile        待充值的手机号
@@ -30,7 +30,7 @@ function md5(text) {
  * @apiParam {String}   sign          签名,按参数字母升序将值连接成一个字符串并用md5加密,md5({amount}{urlencode(callback)}{id}{mobile}{partner}{secret(密钥)}{t})
  *
  * @apiExample Example usage:
- * curl -i http://115.28.102.142:8000/v1/api/order?amount={amount}&callback={urlencode(callback)}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}
+ * curl -i http://115.28.102.142:8000/v1/api/order?amount={amount}&callback={callback}&id={id}&mobile={mobile}&partner={partner}&t={t}&sign={sign}
  *
  * @apiExample Callback(GET):
  * curl -i http://xxxxxx?trade_no={交易号}&amount={金额}&success={1(成功)|0(失败)}&t={时间戳}&sign=md5({amount}{secret(密钥)}{success}{t}{trade_no})
@@ -138,7 +138,7 @@ router.get('/order', async function (ctx, next) {
     }
 
     if (debug)
-        ret.debug = {'target': data, 'sign': _sign};
+        ret.debug = {'服务器用来做签名的数据,当出现签名失败时和你自己的签名数据对比': data, '服务器的签名': _sign};
 
 
     ctx.body = ret;
@@ -221,7 +221,7 @@ router.get('/order/status', async function (ctx, next) {
     }
 
     if (debug)
-        ret.debug = {'target': data, 'sign': _sign};
+        ret.debug = {'服务器用来做签名的数据,当出现签名失败时和你自己的签名数据对比': data, '服务器的签名': _sign};
 
 
     ctx.body = ret;
@@ -297,14 +297,14 @@ router.get('/partner/balance', async function (ctx, next) {
     }
 
     if (debug)
-        ret.debug = {'target': data, 'sign': _sign};
+        ret.debug = {'服务器用来做签名的数据,当出现签名失败时和你自己的签名数据对比': data, '服务器的签名': _sign};
 
 
     ctx.body = ret;
 });
 
 router.get('/test', async function (ctx) {
-    ctx.body = ++debug;
+    ctx.body = ctx.request.query;
 });
 
 router.get('/testtest/order', async function (ctx) {

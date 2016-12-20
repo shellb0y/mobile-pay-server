@@ -12,8 +12,15 @@ var tuniu_account_handler = function () {
 };
 
 tuniu_account_handler.prototype.exec = function () {
-    //setInterval(()=> {
-        db.account.findAll({where: {_status: null,_source:'tuniu'},limit:2000}).then((accounts)=> {
+    //new cronJob('0 0 0 * * *', function () {
+    //    db.account.update({_status: '等待登录1'});
+    //}, null, true);
+
+    setInterval(()=> {
+        db.account.findAll({
+            where: { _status: null, _source: 'tuniu'},
+            limit: 2000
+        }).then((accounts)=> {
             if (accounts) {
                 accounts.forEach((a)=> {
                     request({
@@ -32,7 +39,7 @@ tuniu_account_handler.prototype.exec = function () {
                 });
             }
         });
-    //}, 1000);
+    }, 5000);
 };
 
 module.exports = tuniu_account_handler;

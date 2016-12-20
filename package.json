@@ -27,6 +27,7 @@
     "koa-views": "^5.0.1",
     "linq": "^3.0.5",
     "mysql": "^2.11.1",
+    "node-cron": "^1.1.2",
     "node-mutex": "^0.2.2",
     "redis": "^2.6.3",
     "redlock-node": "^2.1.2",

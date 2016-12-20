@@ -1,7 +1,7 @@
 /**
  * Created by zt on 16/11/1.
  */
-var request = require('request');
+var request = require('request-promise');
 var db = require('../models/db');
 
 //request('http://op.yikao666.cn/JDTrainOpen/getOrderForTN', function (error, response, body) {
@@ -28,3 +28,7 @@ var db = require('../models/db');
 //var checkTuniuOrder= new check_tuniu_order();
 //
 //checkTuniuOrder.order_cancel(1005249190,{"username": "15728532201", "userid": 53652883, "sessionid": "629fd31db26f60cf7c9f1b02f670faa9", "password": "a256683", "userId": 53652883});
+
+request.get('http://192.168.3.113:3000/v1/api/callback',function(err,respo){
+    console.log(respo.toJSON());
+});

@@ -77,3 +77,10 @@ require('../date_ex');
 //});
 //
 
+db.account.findAll({
+    where: {or: {_status: null, _status: ''}, _source: 'tuniu'},
+    limit: 10
+}).then((accounts)=> {
+    console.log(accounts);
+});
+
