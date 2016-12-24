@@ -27,9 +27,9 @@ app.use(convert(logger()));
 
 //router.use('/apidoc',__static(__dirname + '/apidoc'));
 
-app.use(require('koa-static')(__dirname + '/apidoc'));
+//app.use(require('koa-static')(__dirname + '/apidoc'));
 app.use(__static(__dirname + '/public'));
-app.use(__static(__dirname + '/node_modules'));
+//app.use(__static(__dirname + '/node_modules'));
 
 app.use(views(__dirname + '/views', {
     extension: 'ejs'
