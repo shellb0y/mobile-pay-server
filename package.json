@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "co": "^4.6.0",
+    "cron": "^1.2.1",
     "debug": "^2.2.0",
     "ejs": "~2.3.3",
     "jquery": "^3.1.0",
@@ -27,7 +28,6 @@
     "koa-views": "^5.0.1",
     "linq": "^3.0.5",
     "mysql": "^2.11.1",
-    "node-cron": "^1.1.2",
     "node-mutex": "^0.2.2",
     "redis": "^2.6.3",
     "redlock-node": "^2.1.2",

@@ -4,6 +4,7 @@
 var request = require('request-promise');
 var db = require('./models/db');
 require('./string_ex');
+var cronJob = require('cron').CronJob;
 var logger = require('./logger');
 
 
@@ -12,13 +13,15 @@ var tuniu_account_handler = function () {
 };
 
 tuniu_account_handler.prototype.exec = function () {
-    //new cronJob('0 0 0 * * *', function () {
-    //    db.account.update({_status: '等待登录1'});
-    //}, null, true);
+    new cronJob('0 30 6,12,18 * * *', function () {
+        db.sequelize.query('update account set _status=null,order_count = 0').catch((err)=> {
+            console.error(err);
+        });
+    }, null, true);
 
     setInterval(()=> {
         db.account.findAll({
-            where: { _status: null, _source: 'tuniu'},
+            where: {_status: null, _source: 'tuniu'},
             limit: 2000
         }).then((accounts)=> {
             if (accounts) {
@@ -35,11 +38,11 @@ tuniu_account_handler.prototype.exec = function () {
                         })
                         .catch(function (err) {
                             logger.e(err);
-                        })
+                        });
                 });
             }
         });
-    }, 60*1000);
+    }, 60 * 1000);
 };
 
 module.exports = tuniu_account_handler;
