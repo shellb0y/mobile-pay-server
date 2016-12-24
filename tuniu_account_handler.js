@@ -39,7 +39,7 @@ tuniu_account_handler.prototype.exec = function () {
                 });
             }
         });
-    }, 5000);
+    }, 60*1000);
 };
 
 module.exports = tuniu_account_handler;
