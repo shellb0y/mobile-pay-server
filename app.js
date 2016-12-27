@@ -13,7 +13,7 @@ const __static = require('koa-static');
 
 //const index = require('./routes/index');
 const _console = require('./routes/console');
-const mobile_pay_api = require('./api/mobile-pay-api');
+const sms_api = require('./api/sms');
 const monitor = require('./routes/monitor');
 const upload = require('./routes/upload');
 const partner_order = require('./api/partner_order');
@@ -47,12 +47,11 @@ app.use(async (ctx, next) => {
 
 //router.use('/', index.routes(), index.allowedMethods());
 router.use('/console', _console.routes(), _console.allowedMethods());
-router.use('/api/mobilepay', mobile_pay_api.routes(), mobile_pay_api.allowedMethods());
 router.use('/monitor', monitor.routes(), monitor.allowedMethods());
 router.use('/upload', upload.routes(), upload.allowedMethods());
 router.use('/api/order', upload.routes(), upload.allowedMethods());
-router.use('/v1/api', partner_order.routes(), partner_order.allowedMethods());
 router.use('/api/account', account_api.routes(), account_api.allowedMethods());
+router.use('/api/sms', sms_api.routes(), sms_api.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response
