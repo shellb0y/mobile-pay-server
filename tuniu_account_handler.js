@@ -13,11 +13,11 @@ var tuniu_account_handler = function () {
 };
 
 tuniu_account_handler.prototype.exec = function () {
-    new cronJob('0 30 6,12,18 * * *', function () {
-        db.sequelize.query('update account set _status=null,order_count = 0').catch((err)=> {
-            console.error(err);
-        });
-    }, null, true);
+    //new cronJob('0 30 6,12,18 * * *', function () {
+    //    db.sequelize.query('update account set _status=null,order_count = 0').catch((err)=> {
+    //        console.error(err);
+    //    });
+    //}, null, true);
 
     setInterval(()=> {
         db.account.findAll({
