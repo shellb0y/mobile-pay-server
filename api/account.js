@@ -6,13 +6,15 @@ var db = require('../models/db');
 require('../date_ex');
 
 router.post('/tuniu/cookie', async function (ctx, next) {
+    console.log(new Date().format('yyyy-MM-dd hh:mm:ss') + '');
     var account = await db.sequelize.query(`select * from account where _data->"$.username"='${ctx.request.body.username}'`,
         {type: db.sequelize.QueryTypes.SELECT/*,model:db.ticket_order*/});
+
     if (account) {
         db.account.update({
             cookie: ctx.request.body.cookie,
             _status: ctx.request.body.status,
-            modified:new Date().format('yyyy-MM-dd hh:mm:ss')
+            modified: new Date()
         }, {where: {account_id: account[0].account_id}});
         ctx.body = 'success';
     }
