@@ -39,6 +39,10 @@ module.exports = function (sequelize, DataTypes) {
         queue_count:{
             type: DataTypes.INTEGER(11),
             allowNull: false
+        },
+        modified:{
+            type: DataTypes.DATE(11),
+            allowNull: true
         }
     }, {
         tableName: 'account'
