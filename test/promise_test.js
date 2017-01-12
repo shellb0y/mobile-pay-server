@@ -6,15 +6,19 @@
 
 var promise_test = new Promise((resolve, reject)=> {
     setTimeout(()=>{
-        resolve(1);
+        reject(1);
     },2000);
 });
 
 
 
 async function test(){
-    var p= await promise_test;
-    console.log(p);
+    try {
+        var p = await promise_test;
+        console.log(p);
+    }catch(err){
+        console.error(err);
+    }
 }
 
 test();

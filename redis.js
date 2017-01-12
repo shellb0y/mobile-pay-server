@@ -1,94 +1,18 @@
 /**
- * Created by zt on 16/12/9.
+ * Created by zt on 17/1/12.
  */
-'use strict';
-var redis = require('redis');
+const Redis = require('ioredis');
 
-exports.setnxSync = async function (client, key, value) {
-    return await new Promise((resovle, reject)=> {
-        client.setnx(key, value, (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resovle(data);
-        });
-    });
+let redis = function () {
+
 };
 
-exports.brpopSync = async function (client, queueName, timeout) {
-    return await new Promise((resovle, reject)=> {
-        client.brpop(queueName, timeout, (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resovle(data);
-        });
-    });
-};
+redis.server = new Redis({
+    port: 6378,          // Redis port
+    host: '120.26.213.143',   // Redis host
+    family: 4,           // 4 (IPv4) or 6 (IPv6)
+    password: 'melodicdeath',
+    db: 0
+});
 
-exports.hgetallSync = async function (client, key) {
-    return await new Promise((resovle, reject)=> {
-        client.hgetall(key, (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resovle(data);
-        });
-    });
-};
-
-
-exports.incrSync = async (client)=> {
-    var index = await new Promise((resovle, reject)=> {
-        client.incr('order_platform:trade_index', (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resovle(data);
-        });
-    });
-
-    if (index == 1) {
-        var date = new Date();
-        client.expire('order_platform:trade_index', 86400 - (date.getHours() * 3600 + date.getMinutes() * 60));
-    }
-
-    return index;
-};
-
-exports.existSync = async (client, key)=> {
-    return await new Promise((resovle, reject)=> {
-        client.exists(key, (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resovle(data);
-        });
-    });
-};
-
-exports.hmsetSync = async (client, key, value)=> {
-    return await new Promise((resovle, reject)=> {
-        client.hmset(key, value, (err, data)=> {
-            if (err)
-                reject(err);
-            else
-                resovle(data);
-        });
-    });
-};
-
-exports.createClient = function () {
-    var client = redis.createClient(6379, '192.168.0.100', {password: 'melodicdeath'});
-    //client.select(1, function (err, data) {
-    //    if (err)
-    //        console.log('redis select db error -' + err);
-    //    else
-    //        console.log('choose db1 ' + data);
-    //});
-
-    client.on('error', function (err) {
-        console.log('redis error - ' + err);
-    });
-    return client;
-};
+module.exports = redis;
