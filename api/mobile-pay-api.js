@@ -75,6 +75,12 @@ router.get('/account/:source', async function (ctx, next) {
     else {
         ctx.status = 204;
     }
+    // db.sequelize.query(`update mobile_pay.account set _status=null,order_count = 0 where `).catch((err)=> {
+    //     if (err instanceof Error)
+    //         throw err;
+    //     else
+    //         throw new Error(err);
+    // });
 });
 
 router.put('/account/ordercount/:id', async function (ctx, next) {
