@@ -49,8 +49,10 @@ router.put('/account/cantuse/:id', async function (ctx, next) {
     if (account) {
         account.get_time = new Date();
         //account.order_count = 999;
-        account._status = '下单失败';
+        //account._status = '下单失败';
+        account.valid = 0;
         account.save();
+
         ctx.body = 1;
     }
     else {
@@ -65,6 +67,7 @@ router.get('/account/:source', async function (ctx, next) {
     // });
 
     var account = await db.account.findOne({
+        where: {valid: 1},
         order: [
             [db.sequelize.fn('RAND')]
         ]

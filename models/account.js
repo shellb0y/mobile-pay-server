@@ -36,6 +36,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER(11),
             allowNull: false
         },
+        valid:{
+            type: DataTypes.INTEGER(11),
+            allowNull: false
+        },
         queue_count:{
             type: DataTypes.INTEGER(11),
             allowNull: false
