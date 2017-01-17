@@ -61,19 +61,19 @@ router.put('/account/cantuse/:id', async function (ctx, next) {
 });
 
 router.get('/account/:source', async function (ctx, next) {
-    var account = await db.account.findOne({
-        where: {_status: '登录成功', modified: {$gt: new Date().getTime() - 30 * 60 * 1000}},
-        order: [
-            [db.sequelize.fn('RAND')]
-        ]
-    });
-
     // var account = await db.account.findOne({
-    //     where: {valid: 1},
+    //     where: {_status: '登录成功', modified: {$gt: new Date().getTime() - 30 * 60 * 1000}},
     //     order: [
     //         [db.sequelize.fn('RAND')]
     //     ]
     // });
+
+    var account = await db.account.findOne({
+        where: {valid: 1},
+        order: [
+            [db.sequelize.fn('RAND')]
+        ]
+    });
 
     //var account = await db.account.findById(5);
 
