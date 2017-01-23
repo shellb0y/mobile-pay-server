@@ -35,28 +35,38 @@ var readline = require('readline'),
     fs = require('fs');
 
 var rl = readline.createInterface({
-    input: fs.createReadStream('account'),
+    input: fs.createReadStream('success.txt'),
     output: process.stdout,
     terminal: false
 });
 
+// rl.on('line', function (line) {
+//     db.account.create({
+//             _data: {
+//                 username: line.split('----')[0],
+//                 password: line.split('----')[1]
+//             },
+//             _source: 'tuniu',
+//             get_count: 0,
+//             get_time: new Date(),
+//             order_count: 0,
+//             valid: 1,
+//             queue_count: 0,
+//             cookie: '',
+//             _status:''
+//         }
+//     ).then((data) => console.log(`${data} success`)).catch(err => {
+//         console.log(err);
+//     });
+// });
+
 rl.on('line', function (line) {
-    db.account.create({
-            _data: {
-                username: line.split('----')[0],
-                password: line.split('----')[1]
-            },
-            _source: 'tuniu',
-            get_count: 0,
-            get_time: new Date(),
-            order_count: 0,
-            valid: 1,
-            queue_count: 0,
-            cookie: '',
-            _status:''
+    db.sequelize.query(`update account set coupon=1 where _data->'$.username'='${line}'`).catch((err) => {
+        if (!err) {
+            throw  err;
         }
-    ).then((data) => console.log(`${data} success`)).catch(err => {
-        console.log(err);
+    }).then(data => {
+        console.log(data);
     });
 });
 

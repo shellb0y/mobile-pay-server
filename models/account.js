@@ -47,6 +47,10 @@ module.exports = function (sequelize, DataTypes) {
         modified:{
             type: DataTypes.DATE(11),
             allowNull: true
+        },
+        coupon: {
+            type: DataTypes.INTEGER(11),
+            allowNull: false
         }
     }, {
         tableName: 'account'
