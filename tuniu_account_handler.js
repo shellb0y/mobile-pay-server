@@ -21,7 +21,7 @@ tuniu_account_handler.prototype.exec = function () {
 
     setInterval(() => {
         db.account.findAll({
-            where: {_status: null, _source: 'tuniu', coupon: 1},
+            where: {_status: null, _source: 'tuniu'},//, coupon: 1
             limit: 2000
         }).then((accounts) => {
             if (accounts) {
