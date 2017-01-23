@@ -106,7 +106,9 @@ router.put('/account/ordercount/:id', async function (ctx, next) {
     var account = await db.account.findById(ctx.params.id);
     if (account) {
         account.order_count += 1;
-        // account.coupon -= 1;
+        if (account.coupon > 0) {
+            account.coupon += 1;
+        }
         account.save();
         ctx.body = 1;
     }
